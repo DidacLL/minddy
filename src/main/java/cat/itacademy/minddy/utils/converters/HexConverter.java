@@ -1,4 +1,4 @@
-package cat.itacademy.minddy.utils;
+package cat.itacademy.minddy.utils.converters;
 
 
 import jakarta.persistence.AttributeConverter;

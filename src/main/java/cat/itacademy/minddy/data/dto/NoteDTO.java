@@ -1,8 +1,9 @@
-package cat.itacademy.minddy.data.dao;
+package cat.itacademy.minddy.data.dto;
 
 import cat.itacademy.minddy.data.config.DateLog;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.NoteType;
+import cat.itacademy.minddy.data.dao.Tag;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import static cat.itacademy.minddy.data.config.NoteType.*;
 @Entity @Table(name = "notes")
 @NoArgsConstructor
 @Getter
-public class Note {
+public class NoteDTO {
     static String numRegx = "^[-+]?\\d+(\\.\\d+)?$";
     static String urlRegx = "^(?:(?:https?|ftp)://)?(?:www\\.|[a-zA-Z]\\.)?[\\w-]+\\.[\\w.-]+(/[\\w-./?%&=]*)?$";
 
@@ -31,11 +32,12 @@ public class Note {
     @ManyToMany
     private List<Tag> tags;
 
-    public void setId(HierarchicalId id) {
+    public NoteDTO setId(HierarchicalId id) {
         this.id = id;
+        return this;
     }
 
-    public Note setContent(String content) {
+    public NoteDTO setContent(String content) {
         content = content.trim();
         if (type != null) {
             switch (type) {
@@ -63,22 +65,26 @@ public class Note {
         else if(content.startsWith("_#"))this.type= SEARCH;
         else this.type=TEXT;
 
-        return null;
+        return this;
     }
 
-    public void setType(NoteType type) {
+    public NoteDTO setType(NoteType type) {
         this.type = type;
+        return this;
     }
 
-    public void setVisible(boolean visible) {
+    public NoteDTO setVisible(boolean visible) {
         isVisible = visible;
+        return this;
     }
 
-    public void setDateLog(DateLog dateLog) {
+    public NoteDTO setDateLog(DateLog dateLog) {
         this.dateLog = dateLog;
+        return this;
     }
 
-    public void setTags(List<Tag> tags) {
+    public NoteDTO setTags(List<Tag> tags) {
         this.tags = tags;
+        return this;
     }
 }

@@ -1,33 +1,44 @@
 package cat.itacademy.minddy.data.dao;
 
 import cat.itacademy.minddy.data.config.DateLog;
+import cat.itacademy.minddy.data.config.HierarchicalId;
+import cat.itacademy.minddy.data.dto.UserDTO;
+import cat.itacademy.minddy.utils.converters.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.Setter;
 
-import java.util.UUID;
+import java.util.List;
 
 @Entity @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
-    private UUID id;
+//    @GeneratedValue(generator = "uuid2")
+//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "id", updatable = false, nullable = false)
+    private String  id;
     private String name;
     @OneToOne
-//    @JoinColumns({
-//            @JoinColumn(name = "rootProject_userId", referencedColumnName = "userId"),
-//            @JoinColumn(name = "rootProject_holderId", referencedColumnName = "holderId"),
-//            @JoinColumn(name = "rootProject_ownId", referencedColumnName = "ownId")
-//    })
     private Project rootProject;
-
+    @Convert(converter = StringListConverter.class)
+    @Column(columnDefinition = "JSON")
+    private List<String> favourites;
+    private String uiConfig;
     @Embedded
     private DateLog dateLog;
+
+
+    static User fromDTO(UserDTO dto){
+        return new User().setId(dto.getId())
+                .setName(dto.getName())
+                .setRootProject(new Project().setId(new HierarchicalId().setOwnId(dto.getRootProject())))
+                .setFavourites(dto.getFavourites())
+                .setUiConfig(dto.getUiConfig());
+    }
 }
