@@ -7,11 +7,23 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
@@ -37,8 +49,53 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("administrator")
                         .requestMatchers("/public/**").hasRole("user")
                         .anyRequest().authenticated())
-                .oauth2Login(Customizer.withDefaults());
+                .oauth2Login((oauth2Login) -> oauth2Login
+                        .userInfoEndpoint((userInfoEndpoint) -> userInfoEndpoint
+                                .userAuthoritiesMapper(userAuthoritiesMapper())
+                        )
+                );
         return http.build();
+    }
+    @Bean
+    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
+        return (userRequest) -> {
+            OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+            OAuth2User oauth2User = delegate.loadUser(userRequest);
+
+            // Extract userId and username from the oauth2User
+            String userId = (String) oauth2User.getAttribute("sub");
+            String username = (String) oauth2User.getAttribute("preferred_username");
+
+            // Create a custom User object with userId and username
+            return new DefaultOAuth2User(
+                    oauth2User.getAuthorities(),
+                    oauth2User.getAttributes(),
+                    "sub"
+            );
+        };
+    }
+    @Bean
+    public GrantedAuthoritiesMapper userAuthoritiesMapper() {
+        return (authorities) -> {
+            Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+
+            authorities.forEach(authority -> {
+                if (authority instanceof OAuth2UserAuthority oauth2UserAuthority) {
+
+                    // Get the OAuth2 provider's name (e.g., google, github)
+                    String providerName = oauth2UserAuthority.getAuthority();
+
+                    // Assign roles based on the provider
+                    if (providerName.equals("google")) {
+                        mappedAuthorities.add(new SimpleGrantedAuthority("user"));
+                    } else if (providerName.equals("github")) {
+                        mappedAuthorities.add(new SimpleGrantedAuthority("user"));
+                    }
+                }
+            });
+
+            return mappedAuthorities;
+        };
     }
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
