@@ -25,7 +25,7 @@ public class HierarchicalId implements Serializable {
     private UUID userId;
     @Column(name = "holder_id")
     private String holderId;
-    @Column(columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT",name = "own_id")
     @Convert(converter= HexConverter.class)
     private String ownId;
 

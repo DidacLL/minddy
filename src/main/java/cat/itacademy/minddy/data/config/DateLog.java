@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.time.LocalDate;
+import java.time.Instant;
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,8 +18,8 @@ public class DateLog
     //---------------------------------------DATE STUFF
     @CreationTimestamp
     @Column(updatable = false,nullable = false)
-    private LocalDate creationDate;
+    private Instant creationDate;
     @UpdateTimestamp
     @Column(nullable = false)
-    private LocalDate updateDate;
+    private Instant updateDate;
 }

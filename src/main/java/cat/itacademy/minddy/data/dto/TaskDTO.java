@@ -1,7 +1,5 @@
 package cat.itacademy.minddy.data.dto;
 
-import cat.itacademy.minddy.data.config.HierarchicalId;
-import cat.itacademy.minddy.data.config.Priority;
 import cat.itacademy.minddy.data.config.RepeatMode;
 import cat.itacademy.minddy.data.config.TaskState;
 import cat.itacademy.minddy.data.dao.SubTask;
@@ -12,18 +10,19 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter @Setter
 public class TaskDTO {
-    private HierarchicalId id;
+    private UUID id;
     private String name;
     private String description;
     private List<SubTask> subtasks;
     private TaskState state;
     private LocalDate date;
     private RepeatMode repetition;
-    private Priority priority;
+    private int priority;
     private int repeatValue;
 
     static TaskDTO fromEntity(Task entity){

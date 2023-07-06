@@ -19,7 +19,7 @@ public class UserDTO {
     String uiConfig;
 
 
-    static UserDTO fromEntity(User entity){
+    public static UserDTO fromEntity(User entity){
         return new UserDTO().setId(entity.getId())
                 .setName(entity.getName())
                 .setRootProject(entity.getRootProject().getId().getOwnId())

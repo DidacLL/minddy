@@ -19,8 +19,6 @@ import java.util.List;
 public class User {
 
     @Id
-//    @GeneratedValue(generator = "uuid2")
-//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "id", updatable = false, nullable = false)
     private String  id;
     private String name;
@@ -33,11 +31,10 @@ public class User {
     @Embedded
     private DateLog dateLog;
 
-
     static User fromDTO(UserDTO dto){
         return new User().setId(dto.getId())
                 .setName(dto.getName())
-                .setRootProject(new Project().setId(new HierarchicalId().setOwnId(dto.getRootProject())))
+                .setRootProject(new Project().setId(new HierarchicalId().setOwnId(dto.getRootProject()))) //FIXME
                 .setFavourites(dto.getFavourites())
                 .setUiConfig(dto.getUiConfig());
     }

@@ -1,26 +1,28 @@
 package cat.itacademy.minddy.data.dao;
 
 import cat.itacademy.minddy.data.config.DateLog;
-import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.NoteType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
-
-import static cat.itacademy.minddy.data.config.NoteType.*;
+import java.util.UUID;
 
 
 @Entity @Table(name = "notes")
 @NoArgsConstructor
-@Getter
+@Getter @Setter
 public class Note {
     static String numRegx = "^[-+]?\\d+(\\.\\d+)?$";
     static String urlRegx = "^(?:(?:https?|ftp)://)?(?:www\\.|[a-zA-Z]\\.)?[\\w-]+\\.[\\w.-]+(/[\\w-./?%&=]*)?$";
-
-    @EmbeddedId
-    private HierarchicalId id;
+    @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
+    private UUID id;
     //-------------------------READABLE STUFF
     private String content;
     @Enumerated
@@ -31,54 +33,12 @@ public class Note {
     @ManyToMany
     private List<Tag> tags;
 
-    public void setId(HierarchicalId id) {
-        this.id = id;
-    }
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "user", referencedColumnName = "user_id"),
+            @JoinColumn(name = "parent_id", referencedColumnName = "holder_id"),
+            @JoinColumn(name = "holder_id", referencedColumnName = "own_id")
+    })
+    private Project holder;
 
-    public Note setContent(String content) {
-        content = content.trim();
-        if (type != null) {
-            switch (type) {
-                case NUMBER -> {
-                    if (Double.isNaN(Double.parseDouble(content))) {
-                        this.type = TEXT;
-                    }
-                }
-                case TEXT -> {
-                }
-                case LINK -> {
-                    if (!content.startsWith("http")) content = "https://" + content;
-                }
-                case SEARCH -> content="_#"+content;
-                default -> {
-                    break; // TODO: 02/07/2023 MANAGE EXCEPTION
-                }
-            }
-            setContent(content);
-            this.content = content;
-            return this;
-        }
-        if(content.matches(numRegx))this.type= NUMBER;
-        else if(content.matches(urlRegx))this.type= LINK;
-        else if(content.startsWith("_#"))this.type= SEARCH;
-        else this.type=TEXT;
-
-        return null;
-    }
-
-    public void setType(NoteType type) {
-        this.type = type;
-    }
-
-    public void setVisible(boolean visible) {
-        isVisible = visible;
-    }
-
-    public void setDateLog(DateLog dateLog) {
-        this.dateLog = dateLog;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
 }

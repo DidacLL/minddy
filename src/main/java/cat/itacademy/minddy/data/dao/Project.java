@@ -29,8 +29,12 @@ public class Project {
     @Enumerated
     private ProjectState state;
     private LocalDate deadLine;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
+    @OneToMany(mappedBy = "holder", cascade = CascadeType.ALL)
+    private List<Task> tasks;
+    @OneToMany(mappedBy = "holder", cascade = CascadeType.ALL)
+    private List<Note> content;
     @Convert(converter = ProjectTrackerListConverter.class)
     @Column(columnDefinition = "JSON")
     private List<ProjectTracker> trackers;
