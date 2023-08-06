@@ -5,41 +5,45 @@ import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.ProjectState;
 import cat.itacademy.minddy.data.dao.trackers.ProjectTracker;
 import cat.itacademy.minddy.data.dto.ProjectDTO;
-import cat.itacademy.minddy.utils.converters.ProjectTrackerListConverter;
+import cat.itacademy.minddy.data.interfaces.Notable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "projects", indexes = {
-        @Index(name = "idx_userHierarchy",columnList ="user_id,holder_id")
+        @Index(name = "idx_project_state",columnList ="state")
 })
 @NoArgsConstructor
 @Getter
 @Setter
-public class Project {
+public class Project implements Notable {
     @EmbeddedId
     private  HierarchicalId id;
+    @Column(nullable = false,columnDefinition = "VARCHAR(60)")
     private String name;
     private String description;
-    @Enumerated
-    private ProjectState state;
-    private LocalDate deadLine;
-    @ManyToMany(cascade = CascadeType.ALL)
-    private List<Tag> tags;
+    @Enumerated @Column(nullable = false,name = "state")
+    private ProjectState state = ProjectState.ACTIVE;
+    private LocalDate deadLine=null;
+    @ManyToMany
+    private List<Tag> tags=new ArrayList<>();
     @OneToMany(mappedBy = "holder", cascade = CascadeType.ALL)
-    private List<Task> tasks;
+    private List<Task> tasks=new ArrayList<>();
     @OneToMany(mappedBy = "holder", cascade = CascadeType.ALL)
-    private List<Note> content;
-    @Convert(converter = ProjectTrackerListConverter.class)
-    @Column(columnDefinition = "JSON")
+    private List<Note> notes=new ArrayList<>();
+//    @Convert(converter = ProjectTrackerListConverter.class)
+//    @Column(columnDefinition = "JSON")
+    @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL)
     private List<ProjectTracker> trackers;
-    private String uiConfig;
+    private String uiConfig="";
     @Embedded
+    @Column
     private DateLog dateLog;
 
 public static Project fromDTO(ProjectDTO dto){

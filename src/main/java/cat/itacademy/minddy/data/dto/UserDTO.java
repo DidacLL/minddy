@@ -6,24 +6,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter @Getter
 public class UserDTO {
     private String id;
     private String name;
-    private String rootProject;
-    List<String> favourites;
+//    private String rootProject;
+//    List<String> favourites;
     String uiConfig;
 
 
     public static UserDTO fromEntity(User entity){
         return new UserDTO().setId(entity.getId())
                 .setName(entity.getName())
-                .setRootProject(entity.getRootProject().getId().getOwnId())
-                .setFavourites(entity.getFavourites())
+//                .setRootProject(entity.getRootProject().getId().getOwnId())
+//                .setFavourites(entity.getFavourites())
                 .setUiConfig(entity.getUiConfig());
     }
 }

@@ -17,4 +17,9 @@ class HierarchicalIdTest {
     void getAllParents_test() {
         assertEquals("EF", id.getAllParents().get(2));
     }
+    @Test
+    void mergedIdConstructor() {
+        assertEquals("IJ", new HierarchicalId("userId","ABCDEFGHIJ").getOwnId());
+        assertEquals("ABCDEFGH", new HierarchicalId("userId","ABCDEFGHIJ").getHolderId());
+    }
 }

@@ -17,9 +17,9 @@ public class DateLog
 {
     //---------------------------------------DATE STUFF
     @CreationTimestamp
-    @Column(updatable = false,nullable = false)
-    private Instant creationDate;
+    @Column(name = "creation_date",updatable = false,nullable = false)
+    Instant creationDate;
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(name = "update_date",nullable = false)
     private Instant updateDate;
 }

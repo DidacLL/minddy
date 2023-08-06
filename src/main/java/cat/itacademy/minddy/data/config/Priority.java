@@ -1,7 +1,9 @@
 package cat.itacademy.minddy.data.config;
 
 public enum Priority {
-    HIGH,
+    LOWER,
+    LOW,
     NORMAL,
-    LOW
+    HIGH,
+    HIGHER
 }
