@@ -9,4 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 //@NoArgsConstructor
 public class CounterTracker extends ProjectTracker{
+
 }

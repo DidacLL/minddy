@@ -1,31 +1,50 @@
 package cat.itacademy.minddy.data.dao.trackers;
 
 import cat.itacademy.minddy.data.config.SystemEvent;
+import cat.itacademy.minddy.data.config.SystemTarget;
+import cat.itacademy.minddy.data.dao.Project;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.UUID;
 
 
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectTracker implements Serializable {
+@Entity @Inheritance(strategy = InheritanceType.JOINED)
+public abstract class ProjectTracker implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false,updatable = false)
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "user", referencedColumnName = "user_id"),
+            @JoinColumn(name = "parent_id", referencedColumnName = "holder_id"),
+            @JoinColumn(name = "holder_id", referencedColumnName = "own_id")
+    })
+    Project owner;
     int value,max;
-    List<SystemEvent> event;
+    @Column(columnDefinition = "VARCHAR(30)")
+    String name;
+    String prompt;
+    @Enumerated
+    SystemTarget target;
+    @Enumerated
+    SystemEvent event;
     boolean auto;
 
-    public ProjectTracker(int max, boolean auto, SystemEvent ... events) {
+    public ProjectTracker(int max, boolean auto, SystemEvent events) {
         this.value = 0;
         this.auto = auto;
         this.max=max;
-        this.event=new ArrayList<>();
-        if(events.length>0)Collections.addAll(event, events);
+        this.event=events;
     }
 
     @Override

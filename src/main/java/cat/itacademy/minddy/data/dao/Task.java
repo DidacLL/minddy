@@ -1,6 +1,7 @@
 package cat.itacademy.minddy.data.dao;
 
 import cat.itacademy.minddy.data.config.DateLog;
+import cat.itacademy.minddy.data.config.Priority;
 import cat.itacademy.minddy.data.config.RepeatMode;
 import cat.itacademy.minddy.data.config.TaskState;
 import cat.itacademy.minddy.data.dto.TaskDTO;
@@ -16,7 +17,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Entity @Table(name = "tasks")
+@Entity @Table(name = "tasks", indexes = {
+        @Index(name = "idx_task_state",columnList ="state")
+})
 
 @NoArgsConstructor
 @Getter @Setter
@@ -34,6 +37,7 @@ public class Task {
     })
     private Project holder;
     //-------------------------READABLE STUFF
+    @Column(nullable = false,columnDefinition = "VARCHAR(30)")
     private String name;
     private String description;
     @Convert(converter = SubTaskListConverter.class)
@@ -41,17 +45,27 @@ public class Task {
     private List<SubTask> subtasks;
     //-------------------------PROJECT STATE
     @Enumerated
+    @Column(nullable = false,name = "state")
     private TaskState state;
     //------------------------- DEAD LINE
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private LocalDate date;
+    @Column(nullable = true)
+    private LocalDate date=null;
     @Embedded
     private DateLog dateLog;
     @Enumerated
     private RepeatMode repetition;
-    private int priority;
-    private int repeatValue;
-    static Task fromDTO(TaskDTO dto){
+    @Column(name = "priority", nullable = false)
+    @Enumerated
+    private Priority priority;
+
+    private int repeatValue,repeatLimit;
+
+    /**Entity builder method, it only sets independent fields, holder value must be set externally before persist
+     * @param dto Fulfilled TaskDTO non dependent fields
+     * @return Task Entity
+     */
+    public static Task fromDTO(TaskDTO dto){
         return new Task()
                 .setId(dto.getId())
                 .setName(dto.getName())

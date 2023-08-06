@@ -1,8 +1,6 @@
 package cat.itacademy.minddy.data.config;
 
-import cat.itacademy.minddy.utils.converters.HexConverter;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +10,6 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,13 +18,19 @@ import java.util.stream.IntStream;
 @NoArgsConstructor
 @Embeddable
 public class HierarchicalId implements Serializable {
-    @Column(name = "user_id")
-    private UUID userId;
-    @Column(name = "holder_id")
+    @Column(name = "user_id",updatable = false,nullable = false)
+    private String userId;
+    @Column(name = "holder_id",nullable = false)
     private String holderId;
-    @Column(columnDefinition = "TINYINT",name = "own_id")
-    @Convert(converter= HexConverter.class)
+    @Column(name = "own_id",nullable = false)
+//    @Convert(converter= HexConverter.class)
     private String ownId;
+
+    public HierarchicalId(String userId, String id) {
+        this.userId = userId;
+        this.holderId= id.substring(0,id.length()-2);
+        this.ownId = id.substring(id.length()-2);
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Embeddable
 @Getter
@@ -16,9 +15,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TagId implements Serializable {
-    @Column(name = "user_id")
-    private UUID userId;
-    @Column(columnDefinition = "VARCHAR(36)")
+    @Column(name = "user_id",updatable = false,nullable = false)
+    private String userId;
+    @Column(columnDefinition = "VARCHAR(30)",updatable = false,nullable = false)
     private String name;
     @Override
     public boolean equals(Object o) {

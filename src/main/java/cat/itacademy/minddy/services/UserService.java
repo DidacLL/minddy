@@ -1,14 +1,13 @@
 package cat.itacademy.minddy.services;
 
-import cat.itacademy.minddy.data.dto.UserDTO;
+import cat.itacademy.minddy.data.html.UserData;
 import org.apache.hc.core5.http.HttpException;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public interface UserService {
-    UserDTO getUserData(Date today, String userId);
-
-    UserDTO createUser(UserDTO dto, String userId) throws HttpException;
+    UserData getUserData(LocalDate today, String userId) throws HttpException, Exception;
+    public UserData registerNewUser(String userId, String userName, String uiConfig) throws HttpException, Exception;
 
     boolean deleteUser(boolean exportData, String userId);
     boolean existUser(String userId);

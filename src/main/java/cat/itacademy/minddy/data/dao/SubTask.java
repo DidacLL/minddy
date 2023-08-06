@@ -9,6 +9,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Getter @Setter
 public class SubTask implements Serializable {
+
     private String name;
     private boolean done;
 

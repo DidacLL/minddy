@@ -3,7 +3,6 @@ package cat.itacademy.minddy.utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
@@ -42,18 +41,18 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/docs/**").permitAll()
-                        .requestMatchers("/demo/**").permitAll()
-                        .requestMatchers("/test/**").permitAll()
-                        .requestMatchers("/dev/**").hasRole("developer")
-                        .requestMatchers("/admin/**").hasRole("administrator")
-                        .requestMatchers("/public/**").hasRole("user")
-                        .anyRequest().authenticated())
-                .oauth2Login((oauth2Login) -> oauth2Login
-                        .userInfoEndpoint((userInfoEndpoint) -> userInfoEndpoint
-                                .userAuthoritiesMapper(userAuthoritiesMapper())
-                        )
-                );
+                        .requestMatchers("/v1/docs/**").permitAll()
+                        .requestMatchers(request -> request.getRequestURI().contains("/test/")).permitAll()
+                        .requestMatchers(request -> request.getRequestURI().contains("/demo/")).permitAll()
+//                        .requestMatchers("/v1/auth/**").hasRole("user")
+//                        .requestMatchers("/v1/dev/**").hasRole("developer")
+//                        .requestMatchers("/v1/admin/**").hasRole("administrator")
+                        .anyRequest().authenticated());
+//                .oauth2Login((oauth2Login) -> oauth2Login
+//                        .userInfoEndpoint((userInfoEndpoint) -> userInfoEndpoint
+//                                .userAuthoritiesMapper(userAuthoritiesMapper())
+//                        ).defaultSuccessUrl("/v1/public/user/ping").failureUrl("/v1/docs/swagger-ui/index.html")
+//                );
         return http.build();
     }
     @Bean
@@ -86,11 +85,12 @@ public class SecurityConfig {
                     String providerName = oauth2UserAuthority.getAuthority();
 
                     // Assign roles based on the provider
-                    if (providerName.equals("google")) {
+//                    if (providerName.equals("google")) {
                         mappedAuthorities.add(new SimpleGrantedAuthority("user"));
-                    } else if (providerName.equals("github")) {
-                        mappedAuthorities.add(new SimpleGrantedAuthority("user"));
-                    }
+//                    } else if (providerName.equals("github")) {
+//                        mappedAuthorities.add(new SimpleGrantedAuthority("user"));
+//                    }else
+//                        mappedAuthorities.add(new SimpleGrantedAuthority("user"));
                 }
             });
 
@@ -110,36 +110,36 @@ public class SecurityConfig {
         return ClientRegistration.withRegistrationId("keycloak")
                 // Define el ID de registro del cliente OAuth2.
                 // Este valor se usa para identificar al cliente en tu aplicación.
-                .clientId("keycloak-client-id")
+                .clientId("minddy-api")
                 // Define el ID de cliente de tu aplicación en Keycloak.
-                .clientSecret("keycloak-client-secret")
+                .clientSecret("nv3w9nAaprXKFsASeF5pQjDGnDXxgG8X")
                 // Define el secreto de cliente de tu aplicación en Keycloak.
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 // Define el tipo de concesión de autorización que se utilizará.
                 // En este caso, se utiliza el flujo de concesión de código de autorización.
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
+                .redirectUri("http://8833/v1/auth/user/ping")
                 // Define la URI de redireccionamiento que se utilizará después de que el usuario haya iniciado sesión en Keycloak.
                 // Spring Security manejará automáticamente el intercambio de código por un token de acceso en esta URI.
                 .scope("openid", "profile", "email")
                 // Define los ámbitos que se solicitarán al usuario durante el inicio de sesión.
                 // Estos ámbitos determinan qué información se puede acceder sobre el usuario.
-                .authorizationUri("https://your-keycloak-server/auth/realms/your-realm/protocol/openid-connect/auth")
+                .authorizationUri("http://localhost:8080/realms/minddy/protocol/openid-connect/auth")
                 // Define la URI de autorización de Keycloak.
                 // Esta es la URI a la que se redirigirá al usuario para iniciar sesión en Keycloak.
-                .tokenUri("https://your-keycloak-server/auth/realms/your-realm/protocol/openid-connect/token")
+                .tokenUri("http://localhost:8080/realms/minddy/protocol/openid-connect/token")
                 // Define la URI del token de Keycloak.
                 // Esta es la URI a la que Spring Security enviará una solicitud para intercambiar un código de autorización por un token de acceso.
-                .userInfoUri("https://your-keycloak-server/auth/realms/your-realm/protocol/openid-connect/userinfo")
+                .userInfoUri("http://localhost:8080/realms/minddy/protocol/openid-connect/userinfo")
                 // Define la URI de información del usuario de Keycloak.
                 // Esta es la URI a la que Spring Security enviará una solicitud para obtener información sobre el usuario que ha iniciado sesión.
                 .userNameAttributeName("preferred_username")
                 // Define el atributo del nombre de usuario.
                 // Este es el atributo que Spring Security utilizará para obtener el nombre de usuario del usuario que ha iniciado sesión.
-                .jwkSetUri("https://your-keycloak-server/auth/realms/your-realm/protocol/openid-connect/certs")
+                .jwkSetUri("http://localhost:8080/auth/realms/minddy/protocol/openid-connect/certs")
                 // Define la URI del conjunto JWK (JSON Web Key) de Keycloak.
                 // Esta es la URI a la que Spring Security enviará una solicitud para obtener las claves públicas
                 // utilizadas para verificar las firmas de los tokens JWT emitidos por Keycloak.
-                .clientName("Keycloak")
+                .clientName("Minddy")
                 // Define el nombre del cliente.
                 // Este es el nombre que se mostrará al usuario durante el inicio de sesión para identificar al cliente OAuth2.
                 .build();
