@@ -8,28 +8,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Entity @NoArgsConstructor
 @Getter @Setter
 @Table(name = "tags", indexes = {
-        @Index(name = "idx_tags_by_user",columnList ="user_id")
+        @Index(name = "idx_tag_by_visibility",columnList ="is_visible")
 })
 public class Tag {
 
-
-    private boolean isVisible,isHeritable;
+    @Column(nullable = false,updatable = false,name = "is_visible")
+    private boolean isVisible;
+    @Column(nullable = false,updatable = false)
+    private boolean isHeritable;
     @EmbeddedId
     private TagId id;
     @Embedded
     private DateLog dateLog;
-
     public static Tag fromDTO(TagDTO dto){
         return new Tag().setVisible(dto.isVisible())
                 .setHeritable(dto.isHeritable())
                 .setId(new TagId().setName(dto.getName()));
     }
-    public static Tag fromDTO(TagDTO dto, UUID userId){
+    public static Tag fromDTO(TagDTO dto, String userId){
         return new Tag().setVisible(dto.isVisible())
                 .setHeritable(dto.isHeritable())
                 .setId(new TagId(userId, dto.getName()));

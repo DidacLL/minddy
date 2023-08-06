@@ -4,7 +4,7 @@ public enum TaskState {
     TODO,
     ON_PROGRESS,
     REVIEW,
-    DONE,
     DEFERRED,
+    DONE,
     DISCARDED
 }
