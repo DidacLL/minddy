@@ -10,6 +10,7 @@ import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.dto.views.NoteExpanded;
+import cat.itacademy.minddy.data.dto.views.NoteFullView;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
 import cat.itacademy.minddy.repositories.NoteRepository;
 import cat.itacademy.minddy.services.NoteService;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class NoteServiceImpl implements NoteService {
@@ -36,9 +38,13 @@ public class NoteServiceImpl implements NoteService {
     private EntityManager em;
 
     @Override
-    public NoteDTO createNewNote(HierarchicalId projectId, NoteDTO note) throws MinddyException {
+    public NoteDTO createNewNote(HierarchicalId projectId, NoteDTO note, TagDTO ... tags) throws MinddyException {
         try {
-            return NoteDTO.fromEntity(repo.save(generateFullEntity(projectId, note)));
+            return NoteDTO.fromEntity(repo.save(
+                    generateFullEntity(projectId, note).addTag(
+                            Arrays.stream(tags).map(tag -> Tag.fromDTO(tag, projectId.getUserId())).toArray(Tag[]::new)
+                    )
+            ));
         }catch (Exception e){
             throw new MinddyException(400,"Validation failed");
         }
@@ -46,30 +52,38 @@ public class NoteServiceImpl implements NoteService {
 
 
     @Override
-    public NoteDTO createTaskNote(HierarchicalId projectId, String taskId, NoteDTO note) throws MinddyException {
+    public NoteDTO createTaskNote(HierarchicalId projectId, String taskId, NoteDTO note,TagDTO ... tags) throws MinddyException {
         try {
+            var tagArr = new Tag[tags.length+1];
+            tagArr[0]=em.getReference(Tag.class,new TagId(projectId.getUserId(), DefaultTags.TASK_NOTE.getTagName()));
+            for (int i = 0; i < tags.length; i++) tagArr[i + 1] = Tag.fromDTO(tags[i], projectId.getUserId());
             return NoteDTO.fromEntity(
                     repo.save(
-                          generateFullEntity(projectId, note).addTag(em.getReference(Tag.class,new TagId(projectId.getUserId(), DefaultTags.TASK_NOTE.getTagName()))
-                    ).setName(taskId).setVisible(false)));
+                            generateFullEntity(projectId, note).addTag(tagArr).setName(taskId).setVisible(false)));
         }catch (Exception e){
             throw new MinddyException(400,"Validation failed");
         }
     }
 
     @Override
-    public NoteDTO updateNote(HierarchicalId projectId, NoteDTO note) throws MinddyException {
+    public NoteDTO updateNote(HierarchicalId projectId, NoteDTO note, TagDTO ... tags) throws MinddyException {
         try {
-            var old = getFullNote(projectId,note.getId().toString());
-            if (note.getName()!=null&&!note.getName().trim().isEmpty()&&note.getName().equalsIgnoreCase(old.getName()))
+            var old = repo.findById(note.getId()).orElseThrow();
+            var newTags= Arrays.stream(tags).toList();
+            var oldTags = tagService.getNoteTags(projectId.getUserId(), old.getId()).stream().map(TagDTO::fromEntity).toList();
+            if (note.getName()!=null&&!note.getName().trim().isEmpty()&&!note.getName().equalsIgnoreCase(old.getName()))
                 old.setName(note.getName());
-            if (note.getBody()!=null&&!note.getBody().trim().isEmpty()&&note.getBody().equalsIgnoreCase(old.getBody()))
+            if (note.getBody()!=null&&!note.getBody().trim().isEmpty()&&!note.getBody().equalsIgnoreCase(old.getBody()))
                 old.setBody(note.getBody());
             if (note.getType()!=null&& !note.getType().equals(old.getType()))
                 old.setType(note.getType());
-            if (!note.getTags().isEmpty() && !note.getTags().equals(old.getTags())) old.setTags(note.getTags());
 
-            return NoteDTO.fromEntity(repo.save(Note.fromDTO(old)));
+            if(tags.length>0){
+                for(TagDTO dto: oldTags) if(!newTags.contains(dto)) old.quitTag(Tag.fromDTO(dto, projectId.getUserId()));
+                for (TagDTO dto:tags) old.addTag(Tag.fromDTO(dto, projectId.getUserId()));
+            }
+
+            return NoteDTO.fromEntity(repo.save(old));
         }catch (Exception e){
             throw new MinddyException(400,"Inconsistent note data");
         }
@@ -78,8 +92,12 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteDTO deleteNote(HierarchicalId projectId, String noteId) throws MinddyException {
-        var note= repo.getNote(projectId,noteId).orElseThrow(()->new MinddyException(400,"Inconsistent Note Data"));
+    public NoteDTO deleteNote(HierarchicalId projectId, UUID noteId) throws MinddyException {
+        var note= repo.getNote(projectId.getUserId(),
+                projectId.getHolderId(),
+                projectId.getOwnId(),
+                        String.valueOf(noteId))
+                .orElseThrow(()->new MinddyException(400,"Inconsistent Note Data"));
         repo.delete(note);
         return NoteDTO.fromEntity(note);
     }
@@ -98,8 +116,8 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public List<NoteExpanded> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException {
-        return repo.searchByNameAndTags(
-                projectId,
+        return repo.searchByNameAndTag(
+                projectId.getUserId(),
                 taskId,
                 DefaultTags.TASK_NOTE.getTagName()
         );
@@ -107,16 +125,30 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteDTO getFullNote(HierarchicalId projectId, String noteId) throws MinddyException {
-        NoteDTO noteDTO = NoteDTO.fromEntity((repo.getNote(projectId, noteId).orElseThrow(() -> new MinddyException(404, "Note not found"))));
-        //FIXME check if tags are properly set, if not set it manually by the autowired tagService
-        return noteDTO;
+    public NoteDTO getNote(HierarchicalId projectId, UUID noteId) throws MinddyException {
+        return NoteDTO.fromEntity((repo.getNote(projectId.getUserId(),
+                projectId.getHolderId(),
+                projectId.getOwnId(),
+                String.valueOf(noteId)).orElseThrow(() -> new MinddyException(404, "Note " + noteId + " user:" + projectId.getUserId() + " not found"))));
+    }
+
+    @Override
+    public NoteFullView getFullNote(HierarchicalId projectId, UUID noteId) throws MinddyException {
+        List<TagDTO> noteTags = repo.getNoteTags(projectId.getUserId(), noteId);
+        return new NoteFullView(
+                NoteDTO.fromEntity(repo.getNote(projectId.getUserId(),
+                    projectId.getHolderId(),
+                    projectId.getOwnId(),
+                    String.valueOf(noteId)
+                ).orElseThrow(()->new MinddyException(404, "Note not found"))),
+                noteTags
+                );
     }
 
     @Override
     public Page<NoteMinimal> searchNotesByTag(HierarchicalId projectId, int page, int pageSize, String[] tagNames, NoteType... types) throws MinddyException {
-        int[] arrType = Arrays.stream(types).mapToInt(Enum::ordinal).toArray();
-        return repo.searchByTagAndType(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(),PageRequest.of(page,pageSize), tagNames,arrType );
+//        int[] arrType = Arrays.stream(types).mapToInt(NoteType::ordinal).toArray();
+        return repo.searchByTagAndType(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(),PageRequest.of(page,pageSize), tagNames,types );
     }
 
     @Override
@@ -135,13 +167,13 @@ public class NoteServiceImpl implements NoteService {
 
     private Note generateFullEntity(HierarchicalId projectId, NoteDTO note) throws MinddyException {
         Project reference = em.getReference(Project.class, projectId);
-        return Note.fromDTO(note).setHolder(reference).setTags(getTagsFromDTO(projectId, note));
+        return Note.fromDTO(note).setHolder(reference).setTags(tagService.getNoteTags(projectId.getUserId(), note.getId()));
     }
 
-    private List<Tag> getTagsFromDTO(HierarchicalId projectId, NoteDTO note) throws MinddyException {
-        var arr= note.getTags().stream().map(TagDTO::getName).toList();
-        return tagService.getTagsFromList(projectId.getUserId(), arr.toArray(new String[0]));
-    }
+//    private List<Tag> getTagsFromDTO(HierarchicalId projectId, NoteDTO note) throws MinddyException {
+//        var arr= note.getTags().stream().map(TagDTO::getName).toList();
+//        return tagService.getTagsFromList(projectId.getUserId(), arr.toArray(new String[0]));
+//    }
 
 
 }

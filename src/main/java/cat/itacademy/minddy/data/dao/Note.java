@@ -10,10 +10,8 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @Entity
@@ -33,7 +31,7 @@ public class Note {
     //-------------------------READABLE STUFF
     @Column(nullable = false)
     private String body;
-    @Column(name = "name", columnDefinition = "VARCHAR(30)")
+    @Column(name = "name", columnDefinition = "VARCHAR(36)")
     private String name;
     @Enumerated
     @Column(nullable = false)
@@ -58,12 +56,15 @@ public class Note {
                 .setName(dto.getName())
                 .setBody(dto.getBody())
                 .setType(dto.getType())
-                .setTags(dto.getTags()!=null?dto.getTags().stream().map(Tag::fromDTO).collect(Collectors.toList()):new ArrayList<>())
                 .setVisible(dto.isVisible());
     }
 
-    public Note addTag(Tag tag) {
-        this.tags.add(tag);
+    public Note addTag(Tag... tags) {
+        for(Tag tag : tags)if(!this.tags.contains(tag))this.tags.add(tag);
+        return this;
+    }
+    public Note quitTag(Tag ... tags) {
+        for (Tag tag : tags) if (this.tags.contains(tag)) this.tags.remove(tag);
         return this;
     }
 }
