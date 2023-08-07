@@ -1,23 +1,23 @@
 DROP DATABASE IF EXISTS minddy_test;
 CREATE DATABASE minddy_test;
 USE minddy_test;
-create table projects
-(
-    holder_id     varchar(255) not null,
-    own_id        varchar(255) not null,
-    user_id       varchar(255) not null,
-    creation_date datetime(6)  null,
-    update_date   datetime(6)  null,
-    dead_line     date         null,
-    description   varchar(255) null,
-    name          varchar(60)  not null,
-    state         tinyint      not null,
-    ui_config     varchar(255) null,
-    primary key (holder_id, own_id, user_id),
-    check (`state` between 0 and 5)
-);
+create table if not exists projects
+                (
+                    holder_id     varchar(255) not null,
+                    own_id        varchar(255) not null,
+                    user_id       varchar(255) not null,
+                    creation_date datetime(6)  null,
+                    update_date   datetime(6)  null,
+                    dead_line     date         null,
+                    description   varchar(255) null,
+                    name          varchar(60)  not null,
+                    state         tinyint      not null,
+                    ui_config     varchar(255) null,
+                    primary key (holder_id, own_id, user_id),
+                    check (`state` between 0 and 5)
+                );
 
-create table notes
+create table if not exists notes
 (
     id            varchar(36)  not null
         primary key,
@@ -25,7 +25,7 @@ create table notes
     creation_date datetime(6)  null,
     update_date   datetime(6)  null,
     is_visible    bit          not null,
-    name          varchar(30)  null,
+    name          varchar(36)  null,
     type          tinyint      not null,
     parent_id     varchar(255) not null,
     holder_id     varchar(255) not null,
@@ -38,7 +38,7 @@ create table notes
 create index idx_note_by_user_visibility
     on notes (user, is_visible);
 
-create table project_tracker
+create table if not exists project_tracker
 (
     id        binary(16)   not null
         primary key,
@@ -61,7 +61,7 @@ create table project_tracker
 create index idx_project_state
     on projects (state);
 
-create table tags
+create table if not exists tags
 (
     name          varchar(30)  not null,
     user_id       varchar(255) not null,
@@ -72,7 +72,7 @@ create table tags
     primary key (name, user_id)
 );
 
-create table notes_tags
+create table if not exists notes_tags
 (
     note_id      varchar(36)  not null,
     tags_name    varchar(30)  not null,
@@ -83,7 +83,7 @@ create table notes_tags
         foreign key (note_id) references notes (id)
 );
 
-create table projects_tags
+create table if not exists projects_tags
 (
     project_holder_id varchar(255) not null,
     project_own_id    varchar(255) not null,
@@ -99,7 +99,7 @@ create table projects_tags
 create index idx_tag_by_visibility
     on tags (is_visible);
 
-create table tasks
+create table if not exists tasks
 (
     id            varchar(36)  not null
         primary key,
@@ -127,7 +127,7 @@ create table tasks
 create index idx_task_state
     on tasks (state);
 
-create table user
+create table if not exists user
 (
     id            varchar(255) not null
         primary key,
@@ -136,6 +136,9 @@ create table user
     name          varchar(255) null,
     ui_config     varchar(255) null
 );
+
+
+
 
 
 
@@ -182,39 +185,39 @@ INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, t
 
 
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('TASK000000000001',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my first task :`)','First one',2,0,0,0,0,'{}','00FF','FE','1234567890');
+values ('10a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my first task :`)','First one',2,0,0,0,0,'{}','00FF','FE','1234567890');
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('TASK000000000002',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Second one',2,0,0,0,0,'{}','00FF','FF','1234567890');
+values ('11a6f4fc-b187-40be-9788-84c6f0093747',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Second one',2,0,0,0,0,'{}','00FF','FF','1234567890');
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('TASK000000000003',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Third one',4,0,0,0,0,'{}','00FFFF','FF','1234567890');
+values ('12a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Third one',4,0,0,0,0,'{}','00FFFF','FF','1234567890');
 
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('TASK000000000004',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my first task :`)','First one',2,0,0,0,0,'{}','00FF','FE','1234567891');
+values ('13a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my first task :`)','First one',2,0,0,0,0,'{}','00FF','FE','1234567891');
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('TASK000000000005',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Second one',2,0,0,0,0,'{}','00FF','FF','1234567891');
+values ('14a6f4fc-b187-40be-9788-84c6f0093747',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Second one',2,0,0,0,0,'{}','00FF','FF','1234567891');
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('TASK000000000006',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Third one',4,0,0,0,0,'{}','00FFFF','FF','1234567891');
+values ('15a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Third one',4,0,0,0,0,'{}','00FFFF','FF','1234567891');
 
 
 insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
-values ('NOTE000000000001','This is a note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Note',0,'00FF','FF','1234567890');
+values ('05a6f4fc-b187-40be-9788-84c6f0093747','This is a note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Note',0,'00FF','FF','1234567890');
 
 insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
-values ('NOTE000000000002','This is a task note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),false,'TASK000000000001',0,'00FF','FE','1234567890');
+values ('18a6f4fc-b187-40be-9788-84c6f0093747','This is a task note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),false,'10a6f4fc-b187-40be-9788-84c6f0093747',0,'00FF','FE','1234567890');
 
 insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
-values ('NOTE000000000003','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 1',0,'00FF','FF','1234567890');
+values ('28a6f4fc-b187-40be-9788-84c6f0093747','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 1',0,'00FF','FF','1234567890');
 
 insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
-values ('NOTE000000000004','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 2',0,'00FF','FF','1234567890');
+values ('38a6f4fc-b187-40be-9788-84c6f0093747','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 2',0,'00FF','FF','1234567890');
 
 insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
-values ('NOTE000000000005','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 3',0,'00FFFF','FF','1234567890');
+values ('58a6f4fc-b187-40be-9788-84c6f0093747','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 3',0,'00FFFF','FF','1234567890');
 
 
 
 
-insert into notes_tags (note_id, tags_name, tags_user_id) values ('NOTE000000000002','_TASK_','1234567890');
-insert into notes_tags (note_id, tags_name, tags_user_id) values ('NOTE000000000003','PATATA','1234567890');
-insert into notes_tags (note_id, tags_name, tags_user_id) values ('NOTE000000000004','PATATA','1234567890');
-insert into notes_tags (note_id, tags_name, tags_user_id) values ('NOTE000000000005','PATATA','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('18a6f4fc-b187-40be-9788-84c6f0093747','_TASK_','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('28a6f4fc-b187-40be-9788-84c6f0093747','PATATA','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('38a6f4fc-b187-40be-9788-84c6f0093747','PATATA','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','PATATA','1234567890');

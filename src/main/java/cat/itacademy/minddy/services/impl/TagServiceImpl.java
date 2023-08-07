@@ -3,6 +3,7 @@ package cat.itacademy.minddy.services.impl;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.TagId;
 import cat.itacademy.minddy.data.dao.Tag;
+import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.repositories.TagRepository;
 import cat.itacademy.minddy.services.TagService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -86,6 +88,17 @@ public class TagServiceImpl implements TagService {
 
         return arr;
     }
+
+    @Override
+    @Deprecated
+    public NoteDTO loadTags(String userId, NoteDTO noteDTO) throws MinddyException {
+//        return noteDTO.setTags(getTagsFromList(noteDTO.getTags().stream().map(TagDTO::getName).toArray(()->new String()[0])));
+        return null;
+    }
+    @Override
+public List<Tag> getNoteTags(String userId, UUID noteId){
+     return repo.getNoteTagsEntity(userId,noteId);
+}
     @Override
     public List<Tag> getTagsFromList(String userId, String... tagDTOS) throws MinddyException {
         var arr = new ArrayList<Tag>();

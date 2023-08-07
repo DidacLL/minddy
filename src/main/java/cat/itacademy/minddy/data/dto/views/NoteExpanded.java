@@ -11,14 +11,22 @@ import java.util.UUID;
 
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter @Setter
+@AllArgsConstructor
 public class NoteExpanded {
     private UUID id;
     private String name;
     private String body;
     private NoteType type;
     private boolean isVisible;
+
+    public NoteExpanded(UUID id, String name, String body, int type, boolean isVisible) {
+        this.id = id;
+        this.name = name;
+        this.body = body;
+        this.type = NoteType.values()[type];
+        this.isVisible = isVisible;
+    }
 
     public static NoteExpanded fromEntity(Note entity){
         return new NoteExpanded().setId(entity.getId())
