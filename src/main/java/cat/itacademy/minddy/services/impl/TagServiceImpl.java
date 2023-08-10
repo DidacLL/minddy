@@ -41,12 +41,17 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDTO> getProjectTags(HierarchicalId projectId, boolean visible) {
-        return repo.getAllProjectTags(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(), visible);
+        return repo.getAllProjectTags(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(), visible).stream().map(TagDTO::fromEntity).toList();
     }
 
     @Override
     public List<TagDTO> getNoteTags(String userId, String noteId, boolean visible) {
         return repo.getAllNoteTags(noteId, userId, visible);
+    }
+
+    @Override
+    public List<TagDTO> getTaskTags(String userId, String noteId, boolean onlyVisible) {
+        return null;
     }
 
     @Override

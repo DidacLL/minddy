@@ -1,6 +1,5 @@
 package cat.itacademy.minddy.controllers.entities;
 
-import cat.itacademy.minddy.data.dto.NewProjectDTO;
 import cat.itacademy.minddy.data.dto.ProjectDTO;
 import org.springframework.http.ResponseEntity;
 
@@ -12,7 +11,7 @@ public interface ProjectController {
     ResponseEntity<List<ProjectDTO>> getSubProjects( String id);
 
     //-------------------------------------------------------------CREATE
-    ResponseEntity<ProjectDTO> createSubProject( NewProjectDTO dto);
+    ResponseEntity<ProjectDTO> createSubProject( ProjectDTO dto);
 
     //-------------------------------------------------------------UPDATE
     ResponseEntity<Boolean> updateProject( ProjectDTO dto);

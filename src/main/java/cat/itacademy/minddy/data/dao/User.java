@@ -18,7 +18,7 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "id", updatable = false, nullable = false,columnDefinition = "VARCHAR(36)")
     private String  id;
     private String name;
     private String uiConfig;

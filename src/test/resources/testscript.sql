@@ -2,20 +2,20 @@ DROP DATABASE IF EXISTS minddy_test;
 CREATE DATABASE minddy_test;
 USE minddy_test;
 create table if not exists projects
-                (
-                    holder_id     varchar(255) not null,
-                    own_id        varchar(255) not null,
-                    user_id       varchar(255) not null,
-                    creation_date datetime(6)  null,
-                    update_date   datetime(6)  null,
-                    dead_line     date         null,
-                    description   varchar(255) null,
-                    name          varchar(60)  not null,
-                    state         tinyint      not null,
-                    ui_config     varchar(255) null,
-                    primary key (holder_id, own_id, user_id),
-                    check (`state` between 0 and 5)
-                );
+(
+    holder_id     varchar(36)  not null,
+    own_id        varchar(2)   not null,
+    user_id       varchar(36)  not null,
+    creation_date datetime(6)  null,
+    update_date   datetime(6)  null,
+    dead_line     date         null,
+    description   varchar(255) null,
+    name          varchar(60)  not null,
+    state         tinyint      not null,
+    ui_config     varchar(255) null,
+    primary key (holder_id, own_id, user_id),
+    check (`state` between 0 and 5)
+);
 
 create table if not exists notes
 (
@@ -27,9 +27,9 @@ create table if not exists notes
     is_visible    bit          not null,
     name          varchar(36)  null,
     type          tinyint      not null,
-    parent_id     varchar(255) not null,
-    holder_id     varchar(255) not null,
-    user          varchar(255) not null,
+    parent_id     varchar(36)  not null,
+    holder_id     varchar(2)   not null,
+    user          varchar(36)  not null,
     constraint FK7botlab3hxlbm8of5l5glyc0e
         foreign key (parent_id, holder_id, user) references projects (holder_id, own_id, user_id),
     check (`type` between 0 and 3)
@@ -49,9 +49,9 @@ create table if not exists project_tracker
     prompt    varchar(255) null,
     target    tinyint      null,
     value     int          not null,
-    parent_id varchar(255) null,
-    holder_id varchar(255) null,
-    user      varchar(255) null,
+    parent_id varchar(36)  null,
+    holder_id varchar(2)   null,
+    user      varchar(36)  null,
     constraint FK9p63wyfuctv0kd3pkctr0wgox
         foreign key (parent_id, holder_id, user) references projects (holder_id, own_id, user_id),
     check (`event` between 0 and 6),
@@ -63,20 +63,20 @@ create index idx_project_state
 
 create table if not exists tags
 (
-    name          varchar(30)  not null,
-    user_id       varchar(255) not null,
-    creation_date datetime(6)  null,
-    update_date   datetime(6)  null,
-    is_heritable  bit          not null,
-    is_visible    bit          not null,
+    name          varchar(24) not null,
+    user_id       varchar(36) not null,
+    creation_date datetime(6) null,
+    update_date   datetime(6) null,
+    is_heritable  bit         not null,
+    is_visible    bit         not null,
     primary key (name, user_id)
 );
 
 create table if not exists notes_tags
 (
-    note_id      varchar(36)  not null,
-    tags_name    varchar(30)  not null,
-    tags_user_id varchar(255) not null,
+    note_id      varchar(36) not null,
+    tags_name    varchar(24) not null,
+    tags_user_id varchar(36) not null,
     constraint FK8rskn1swps7s7vmdpyhgcsjg9
         foreign key (tags_name, tags_user_id) references tags (name, user_id),
     constraint FKcxrhvlv1dppm49b2snddodsvi
@@ -85,11 +85,12 @@ create table if not exists notes_tags
 
 create table if not exists projects_tags
 (
-    project_holder_id varchar(255) not null,
-    project_own_id    varchar(255) not null,
-    project_user_id   varchar(255) not null,
-    tags_name         varchar(30)  not null,
-    tags_user_id      varchar(255) not null,
+    project_holder_id varchar(36) not null,
+    project_own_id    varchar(2)  not null,
+    project_user_id   varchar(36) not null,
+    tags_name         varchar(24) not null,
+    tags_user_id      varchar(36) not null,
+    primary key (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id),
     constraint FK8ecv691mldfp8e24peeksw8gh
         foreign key (tags_name, tags_user_id) references tags (name, user_id),
     constraint FKhupgxp8rpbpqb28jv8thaelw4
@@ -114,9 +115,9 @@ create table if not exists tasks
     repetition    tinyint      null,
     state         tinyint      not null,
     subtasks      json         null,
-    parent_id     varchar(255) null,
-    holder_id     varchar(255) null,
-    user          varchar(255) null,
+    parent_id     varchar(36)  null,
+    holder_id     varchar(2)   null,
+    user          varchar(36)  null,
     constraint FKhe3ydqf7c5oipcnptgf472hdn
         foreign key (parent_id, holder_id, user) references projects (holder_id, own_id, user_id),
     check (`priority` between 0 and 4),
@@ -127,9 +128,20 @@ create table if not exists tasks
 create index idx_task_state
     on tasks (state);
 
+create table if not exists tasks_tags
+(
+    task_id      varchar(36) not null,
+    tags_name    varchar(24) not null,
+    tags_user_id varchar(36) not null,
+    constraint FK92yt3qd8g5o4jm1ck3ca69vbp
+        foreign key (task_id) references tasks (id),
+    constraint FKlsupbasageu2emdjmc1k8bu53
+        foreign key (tags_name, tags_user_id) references tags (name, user_id)
+);
+
 create table if not exists user
 (
-    id            varchar(255) not null
+    id            varchar(36)  not null
         primary key,
     creation_date datetime(6)  null,
     update_date   datetime(6)  null,
@@ -138,12 +150,8 @@ create table if not exists user
 );
 
 
-
-
-
-
-INSERT INTO user (id, creation_date, update_date, name, ui_config) VALUES ('1234567890', '2023-08-05 08:52:47.154444', '2023-08-05 08:52:47.154444', 'Cetato', '');
-INSERT INTO user (id, creation_date, update_date, name, ui_config) VALUES ('1234567891', '2023-08-05 09:18:50.327880', '2023-08-05 09:18:50.327880', 'Fetato', '');
+INSERT INTO user (id, creation_date, update_date, name, ui_config) VALUES ('1234567891', '2023-08-05 09:18:50.327880', '2023-08-05 09:18:50.327880', 'Fetato', '{}');
+INSERT INTO user (id, creation_date, update_date, name, ui_config) VALUES ('1234567890', '2023-08-05 09:18:50.327880', '2023-08-05 09:18:50.327880', 'Cetato', '{}');
 
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_DELAYED_', '1234567890', '2023-08-05 08:52:47.065444', '2023-08-05 08:52:47.065444', false, false);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_DELAYED_', '1234567891', '2023-08-05 09:18:50.235879', '2023-08-05 09:18:50.235879', false, false);

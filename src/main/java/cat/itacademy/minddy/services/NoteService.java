@@ -4,7 +4,6 @@ import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.NoteType;
 import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
-import cat.itacademy.minddy.data.dto.views.NoteExpanded;
 import cat.itacademy.minddy.data.dto.views.NoteFullView;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
 import cat.itacademy.minddy.utils.MinddyException;
@@ -22,7 +21,7 @@ public interface NoteService {
 
     Page<NoteMinimal> getAllVisibleNotes(HierarchicalId projectId,int page,int pageSize) throws MinddyException;
     List<NoteDTO> getSystemNotes(HierarchicalId projectId) throws MinddyException;
-    List<NoteExpanded> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException;
+    List<NoteDTO> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException;
 
     NoteDTO getNote(HierarchicalId projectId, UUID noteId) throws MinddyException;
     NoteFullView getFullNote(HierarchicalId projectId, UUID noteId) throws MinddyException;

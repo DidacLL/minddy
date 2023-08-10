@@ -5,7 +5,6 @@ import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.NoteType;
 import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
-import cat.itacademy.minddy.data.dto.views.NoteExpanded;
 import cat.itacademy.minddy.data.dto.views.NoteFullView;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
 import cat.itacademy.minddy.utils.MinddyException;
@@ -134,7 +133,7 @@ class NoteServiceTest {
 
         });
         assertDoesNotThrow(() -> {
-            List<NoteExpanded> taskNotes = service.getTaskNotes(projectId, taskID);
+            List<NoteDTO> taskNotes = service.getTaskNotes(projectId, taskID);
             for (var note : taskNotes) System.out.println(note.getName());
             assertTrue("Unexpected taskNotes number", taskNotes.size() >= 2);
         });

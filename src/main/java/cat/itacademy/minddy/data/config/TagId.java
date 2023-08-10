@@ -15,9 +15,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TagId implements Serializable {
-    @Column(name = "user_id",updatable = false,nullable = false)
+    @Column(name = "user_id",updatable = false,nullable = false,columnDefinition = "VARCHAR(36)")
     private String userId;
-    @Column(columnDefinition = "VARCHAR(30)",updatable = false,nullable = false)
+    @Column(columnDefinition = "VARCHAR(24)",updatable = false,nullable = false)
     private String name;
     @Override
     public boolean equals(Object o) {

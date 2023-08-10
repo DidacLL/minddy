@@ -18,11 +18,11 @@ import java.util.stream.IntStream;
 @NoArgsConstructor
 @Embeddable
 public class HierarchicalId implements Serializable {
-    @Column(name = "user_id",updatable = false,nullable = false)
+    @Column(name = "user_id",updatable = false,nullable = false,columnDefinition = "VARCHAR(36)")
     private String userId;
-    @Column(name = "holder_id",nullable = false)
+    @Column(name = "holder_id",nullable = false,columnDefinition = "VARCHAR(36)")
     private String holderId;
-    @Column(name = "own_id",nullable = false)
+    @Column(name = "own_id",nullable = false,columnDefinition = "VARCHAR(2)")
 //    @Convert(converter= HexConverter.class)
     private String ownId;
 
@@ -70,6 +70,6 @@ public class HierarchicalId implements Serializable {
 
     @Override
     public String toString() {
-        return holderId+""+ ownId;
+        return holderId+ ownId;
     }
 }
