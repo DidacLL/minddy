@@ -17,6 +17,7 @@ public interface TagService {
 
     List<TagDTO> getProjectTags(HierarchicalId projectId, boolean onlyVisible);
     List<TagDTO> getNoteTags(String userId,String noteId,boolean onlyVisible);
+    List<TagDTO> getTaskTags(String userId,String noteId,boolean onlyVisible);
     List<String> getTagsLike(String userId, String nameLike);
     int countTagUses(String userId,String tagName);
 

@@ -3,8 +3,8 @@ package cat.itacademy.minddy.repositories;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.NoteType;
 import cat.itacademy.minddy.data.dao.Note;
+import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
-import cat.itacademy.minddy.data.dto.views.NoteExpanded;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +48,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
 //            """
     @Query(
             value = """
-            SELECT NEW cat.itacademy.minddy.data.dto.views.NoteExpanded(
+            SELECT NEW cat.itacademy.minddy.data.dto.NoteDTO(
                 n.id,
                 n.name,
                 n.body,
@@ -60,7 +60,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
             """
 //            (SELECT COUNT(*) FROM notes_tags nt NATURAL JOIN tags t WHERE nt.tags_user_id=:userId AND nt.note_id = n.id AND t.name=:tags) = 1
     )
-    List<NoteExpanded> searchByNameAndTag(@Param(value = "userId") String userId,@Param(value = "name")String name, @Param(value = "tags") String tags);
+    List<NoteDTO> searchByNameAndTag(@Param(value = "userId") String userId, @Param(value = "name")String name, @Param(value = "tags") String tags);
 
     @Query(nativeQuery = true,
             value = """
@@ -75,7 +75,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
             (SELECT COUNT(*) FROM notes_tags nt WHERE nt.tags_user_id=:userId AND nt.note_id = n.id AND nt.tags_name IN (:tags)) = (SELECT COUNT(*)FROM tags t WHERE t.name IN (:tags))
             """
     )
-    List<NoteExpanded> searchByNameAndTags(@Param(value = "userId") String userId,@Param(value = "name")String name, @Param(value = "tags")List<String> tags);
+    List<NoteDTO> searchByNameAndTags(@Param(value = "userId") String userId,@Param(value = "name")String name, @Param(value = "tags")List<String> tags);
 
     @Query(value = """
     SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id,n.name) FROM Note n
@@ -87,7 +87,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     SELECT * FROM notes n WHERE n.user= :userId AND NOT n.is_visible
     AND(
         ( n.parent_id= :parentId AND n.holder_id= :holderId)
-        OR (n.parent_id LIKE CONCAT(:parentId, :holderId,'%'))) 
+        OR (n.parent_id LIKE CONCAT(:parentId, :holderId,'%')))
     AND (SELECT COUNT(*) FROM notes_tags nt WHERE nt.note_id=n.id AND nt.tags_name='_TASK_')<1
     ORDER BY n.creation_date
 """)
@@ -105,10 +105,10 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
 
         SELECT new cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id, n.name)
         FROM Note n JOIN n.tags t
-         WHERE n.holder.id.userId = :userId AND t.id.name IN :tagNames AND n.isVisible = true 
-         AND n.type IN :types 
-         AND (n.holder.id.holderId = :parentId 
-            AND n.holder.id.ownId = :holderId 
+         WHERE n.holder.id.userId = :userId AND t.id.name IN :tagNames AND n.isVisible = true
+         AND n.type IN :types
+         AND (n.holder.id.holderId = :parentId
+            AND n.holder.id.ownId = :holderId
             OR n.holder.id.holderId LIKE CONCAT(:parentId, :holderId, '%')
          )
          """)
@@ -116,21 +116,21 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
 
     @Query(nativeQuery = true,value = """
     SELECT nt.note_id,n.name  FROM notes_tags nt NATURAL JOIN notes n
-    WHERE n.user=:userId AND n.is_visible AND n.type IN :types AND( 
+    WHERE n.user=:userId AND n.is_visible AND n.type IN :types AND(
         (n.parent_id=:parentId AND n.holder_id=:holderId)
         OR (n.parent_id LIKE CONCAT(:parentId,:holderId,'%'))
         AND  n.name LIKE CONCAT('%',:name,'%')
-    ) ORDER BY n.update_date DESC 
+    ) ORDER BY n.update_date DESC
 """)
     Page<NoteMinimal> searchByNameAndType(String userId, String parentId, String holderId, Pageable pageable, String name, int... types);
 
     @Query(nativeQuery = true,value = """
     SELECT nt.note_id,n.name  FROM notes_tags nt NATURAL JOIN notes n
-    WHERE n.user=:userId AND n.is_visible AND n.type IN :types AND( 
+    WHERE n.user=:userId AND n.is_visible AND n.type IN :types AND(
         (n.parent_id=:parentId AND n.holder_id=:holderId)
         OR (n.parent_id LIKE CONCAT(:parentId,:holderId,'%'))
         AND n.body LIKE CONCAT('%',:text,'%')
-    ) ORDER BY n.update_date DESC 
+    ) ORDER BY n.update_date DESC
 """)
     Page<NoteMinimal> searchByBodyAndType(String userId, String parentId, String holderId,Pageable pageable, String text, int... types);
 }

@@ -15,14 +15,20 @@ import lombok.Setter;
 })
 public class Tag {
 
+    @EmbeddedId
+    private TagId id;
     @Column(nullable = false,updatable = false,name = "is_visible")
     private boolean isVisible;
     @Column(nullable = false,updatable = false)
     private boolean isHeritable;
-    @EmbeddedId
-    private TagId id;
     @Embedded
     private DateLog dateLog;
+//    @ManyToMany(mappedBy = "tags")
+//    Set<Project> projects;
+//    @ManyToMany(mappedBy = "tags")
+//    Set<Note> notes;
+//    @ManyToMany(mappedBy = "tags")
+//    Set<Task> tasks;
     public static Tag fromDTO(TagDTO dto){
         return new Tag().setVisible(dto.isVisible())
                 .setHeritable(dto.isHeritable())

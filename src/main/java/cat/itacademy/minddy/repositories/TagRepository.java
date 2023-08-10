@@ -13,21 +13,21 @@ import java.util.UUID;
 @Repository
 public interface TagRepository extends JpaRepository<Tag, TagId> {
     @Query(nativeQuery = true,value = """
-    SELECT t.name,t.is_visible,t.is_heritable FROM projects_tags tp
+    SELECT * FROM projects_tags tp
         NATURAL JOIN tags t
-        WHERE t.user_id= :userId 
-        AND tp.project_holder_id= :projectParentId 
+        WHERE t.user_id= :userId
+        AND tp.project_holder_id= :projectParentId
         AND tp.project_own_id= :projectOwnId
         AND t.is_visible = :visible
         ORDER BY (SELECT COUNT(*) FROM projects_tags tp2 WHERE tp2.tags_name = t.name AND tp2.tags_user_id=t.user_id) DESC
-        
+
 """)
-    List<TagDTO> getAllProjectTags(String userId, String projectParentId, String projectOwnId, boolean visible);
+    List<Tag> getAllProjectTags(String userId, String projectParentId, String projectOwnId, boolean visible);
     @Query(nativeQuery = true,value = """
     SELECT t.name,t.is_visible,t.is_heritable FROM notes_tags tn
         NATURAL JOIN tags t
-        WHERE t.user_id= :userId 
-        AND tn.note_id= :noteId 
+        WHERE t.user_id= :userId
+        AND tn.note_id= :noteId
         AND t.is_visible = :visible
         ORDER BY (SELECT COUNT(*) FROM notes_tags tn2 WHERE tn2.tags_name = t.name AND tn2.tags_user_id=t.user_id) DESC
 """)

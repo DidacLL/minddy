@@ -9,7 +9,6 @@ import cat.itacademy.minddy.data.dao.Project;
 import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
-import cat.itacademy.minddy.data.dto.views.NoteExpanded;
 import cat.itacademy.minddy.data.dto.views.NoteFullView;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
 import cat.itacademy.minddy.repositories.NoteRepository;
@@ -115,7 +114,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteExpanded> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException {
+    public List<NoteDTO> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException {
         return repo.searchByNameAndTag(
                 projectId.getUserId(),
                 taskId,
@@ -169,11 +168,6 @@ public class NoteServiceImpl implements NoteService {
         Project reference = em.getReference(Project.class, projectId);
         return Note.fromDTO(note).setHolder(reference).setTags(tagService.getNoteTags(projectId.getUserId(), note.getId()));
     }
-
-//    private List<Tag> getTagsFromDTO(HierarchicalId projectId, NoteDTO note) throws MinddyException {
-//        var arr= note.getTags().stream().map(TagDTO::getName).toList();
-//        return tagService.getTagsFromList(projectId.getUserId(), arr.toArray(new String[0]));
-//    }
 
 
 }

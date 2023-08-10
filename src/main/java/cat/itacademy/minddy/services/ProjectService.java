@@ -3,6 +3,7 @@ package cat.itacademy.minddy.services;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dto.ProjectDTO;
+import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.html.ProjectStructure;
 import cat.itacademy.minddy.utils.MinddyException;
 
@@ -45,7 +46,7 @@ public interface ProjectService {
     ProjectDTO getProject(HierarchicalId hierarchicalId) throws MinddyException;
 
 
-    ProjectDTO updateProject(ProjectDTO dto) throws MinddyException;
+    ProjectDTO updateProject(ProjectDTO dto, TagDTO... tags) throws MinddyException;
     ProjectDTO getAllSubProjects(HierarchicalId hierarchicalId);
     List<String> getAllSubprojectsID(HierarchicalId hierarchicalId);
     void deleteProject(HierarchicalId hierarchicalId);

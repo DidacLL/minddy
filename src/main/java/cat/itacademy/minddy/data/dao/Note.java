@@ -3,6 +3,7 @@ package cat.itacademy.minddy.data.dao;
 import cat.itacademy.minddy.data.config.DateLog;
 import cat.itacademy.minddy.data.config.NoteType;
 import cat.itacademy.minddy.data.dto.NoteDTO;
+import cat.itacademy.minddy.data.interfaces.Taggable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Note {
+public class Note implements Taggable<Note> {
     static String numRegx = "^[-+]?\\d+(\\.\\d+)?$";
     static String urlRegx = "^(?:(?:https?|ftp)://)?(?:www\\.|[a-zA-Z]\\.)?[\\w-]+\\.[\\w.-]+(/[\\w-./?%&=]*)?$";
     @Id
@@ -43,7 +44,7 @@ public class Note {
     @ManyToMany
     private List<Tag> tags;
     @ManyToOne
-    @JoinColumns({
+    @JoinColumns(value = {
             @JoinColumn(name = "user", referencedColumnName = "user_id", nullable = false),
             @JoinColumn(name = "parent_id", referencedColumnName = "holder_id", nullable = false),
             @JoinColumn(name = "holder_id", referencedColumnName = "own_id", nullable = false)
@@ -64,7 +65,7 @@ public class Note {
         return this;
     }
     public Note quitTag(Tag ... tags) {
-        for (Tag tag : tags) if (this.tags.contains(tag)) this.tags.remove(tag);
+        for (Tag tag : tags) this.tags.remove(tag);
         return this;
     }
 }
