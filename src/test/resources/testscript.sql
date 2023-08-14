@@ -150,6 +150,8 @@ create table if not exists user
 );
 
 
+
+
 INSERT INTO user (id, creation_date, update_date, name, ui_config) VALUES ('1234567891', '2023-08-05 09:18:50.327880', '2023-08-05 09:18:50.327880', 'Fetato', '{}');
 INSERT INTO user (id, creation_date, update_date, name, ui_config) VALUES ('1234567890', '2023-08-05 09:18:50.327880', '2023-08-05 09:18:50.327880', 'Cetato', '{}');
 
@@ -166,6 +168,13 @@ INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_vi
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('PATATA', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', true, true);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('FRITA', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', false, true);
 
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('test1', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', true, true);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('test2', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', false, true);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('test3', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', true, true);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('test4', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', false, true);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('test5', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', true, true);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('test6', '1234567890', '2023-08-05 09:18:50.323877', '2023-08-05 09:18:50.323877', false, true);
+
 
 
 INSERT INTO projects (holder_id, own_id, user_id, creation_date, update_date, dead_line, description, name, state, ui_config) VALUES ('', '00', '1234567890', '2023-08-05 08:52:47.151445', '2023-08-05 08:52:47.151445', null, '', 'Cetato', 2, '');
@@ -181,10 +190,22 @@ INSERT INTO projects (holder_id, own_id, user_id, creation_date, update_date, de
 
 
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('', '00', '1234567890', '_ROOT_', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('', '00', '1234567890', 'test1', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00', 'FF', '1234567890', 'test1', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00', 'FF', '1234567890', 'test2', '1234567890');
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FF', 'FE', '1234567890', 'PATATA', '1234567890');
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FF', 'FF', '1234567890', 'FRITA', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FF', 'FF', '1234567890', 'test1', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FF', 'FF', '1234567890', 'test2', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FF', 'FF', '1234567890', 'test3', '1234567890');
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FFFF', 'FF', '1234567890', 'PATATA', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FFFF', 'FF', '1234567890', 'test1', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FFFF', 'FF', '1234567890', 'test2', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FFFF', 'FF', '1234567890', 'test3', '1234567890');
+INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FFFF', 'FF', '1234567890', 'test4', '1234567890');
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FFFF', 'FF', '1234567890', 'FRITA', '1234567890');
+
+
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('', '00', '1234567891', '_ROOT_', '1234567891');
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FF', 'FE', '1234567891', 'PATATA', '1234567891');
 INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, tags_name, tags_user_id) VALUES ('00FF', 'FF', '1234567891', 'FRITA', '1234567891');
@@ -194,8 +215,30 @@ INSERT INTO projects_tags (project_holder_id, project_own_id, project_user_id, t
 
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
 values ('10a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my first task :`)','First one',2,0,0,0,0,'{}','00FF','FE','1234567890');
+
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('11a6f4fc-b187-40be-9788-84c6f0093747',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Second one',2,0,0,0,0,'{}','00FF','FF','1234567890');
+values ('11a6f4fc-b187-40be-9788-84c6f0093747',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test Today P:2',2,0,0,0,0,'{}','00FF','FF','1234567890');
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0093746',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test Tomorrow P:2',2,0,0,0,0,'{}','00FF','FF','1234567890');
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0093745',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test 2 days P:2',2,0,0,0,0,'{}','00FF','FF','1234567890');
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0093744',DATE_SUB(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test -1 day P:2',2,0,0,0,0,'{}','00FF','FF','1234567890');
+
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0095743',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test Discarded',2,0,0,0,5,'{}','00FF','FF','1234567890');
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0093783',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test Today P:2',2,0,0,0,1,'{}','00FF','FE','1234567890');
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0093742',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test Tomorrow P:2',2,0,0,0,2,'{}','00FF','FE','1234567890');
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0093741',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test 2 days P:2',2,0,0,0,0,'{}','00FF','FE','1234567890');
+insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
+values ('11a6f4fc-b187-40be-9788-84c6f0093740',DATE_SUB(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my second task :`)','Test -1 day P:2',2,0,0,0,0,'{}','00FF','FE','1234567890');
+
+
+
+
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
 values ('12a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Third one',4,0,0,0,0,'{}','00FFFF','FF','1234567890');
 
@@ -206,6 +249,12 @@ values ('14a6f4fc-b187-40be-9788-84c6f0093747',CURDATE(),curdate(),curdate(),'Ho
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
 values ('15a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Third one',4,0,0,0,0,'{}','00FFFF','FF','1234567891');
 
+INSERT INTO tasks_tags(task_id, tags_name, tags_user_id) VALUES ('10a6f4fc-b187-40be-9788-84c6f0093747','test1','1234567890');
+INSERT INTO tasks_tags(task_id, tags_name, tags_user_id) VALUES ('10a6f4fc-b187-40be-9788-84c6f0093747','test2','1234567890');
+INSERT INTO tasks_tags(task_id, tags_name, tags_user_id) VALUES ('10a6f4fc-b187-40be-9788-84c6f0093747','test3','1234567890');
+INSERT INTO tasks_tags(task_id, tags_name, tags_user_id) VALUES ('11a6f4fc-b187-40be-9788-84c6f0093747','test1','1234567890');
+INSERT INTO tasks_tags(task_id, tags_name, tags_user_id) VALUES ('11a6f4fc-b187-40be-9788-84c6f0093747','test5','1234567890');
+INSERT INTO tasks_tags(task_id, tags_name, tags_user_id) VALUES ('11a6f4fc-b187-40be-9788-84c6f0093747','test6','1234567890');
 
 insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
 values ('05a6f4fc-b187-40be-9788-84c6f0093747','This is a note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Note',0,'00FF','FF','1234567890');
@@ -224,8 +273,35 @@ values ('58a6f4fc-b187-40be-9788-84c6f0093747','This is a listed note, where you
 
 
 
+insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
+values ('05a6f4fc-b187-40be-9788-84c6f1093747','This is a note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Note',0,'00FF','FF','1234567891');
+
+insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
+values ('18a6f4fc-b187-40be-9788-84c6f2093747','This is a task note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),false,'10a6f4fc-b187-40be-9788-84c6f0093747',0,'00FF','FE','1234567891');
+
+insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
+values ('28a6f4fc-b187-40be-9788-84c6f3093747','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 1',0,'00FF','FF','1234567891');
+
+insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
+values ('38a6f4fc-b187-40be-9788-84c6f4093747','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 2',0,'00FF','FF','1234567891');
+
+insert into notes (id, body, creation_date, update_date, is_visible, name, type, parent_id, holder_id, user)
+values ('58a6f4fc-b187-40be-9788-84c6f5093747','This is a listed note, where you can note that is notable anything you note to notate... ',curdate(),curdate(),true,'Dummy Listed Note 3',0,'00FFFF','FF','1234567891');
+
+
+
 
 insert into notes_tags (note_id, tags_name, tags_user_id) values ('18a6f4fc-b187-40be-9788-84c6f0093747','_TASK_','1234567890');
 insert into notes_tags (note_id, tags_name, tags_user_id) values ('28a6f4fc-b187-40be-9788-84c6f0093747','PATATA','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('28a6f4fc-b187-40be-9788-84c6f0093747','test1','1234567890');
 insert into notes_tags (note_id, tags_name, tags_user_id) values ('38a6f4fc-b187-40be-9788-84c6f0093747','PATATA','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('38a6f4fc-b187-40be-9788-84c6f0093747','test1','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('38a6f4fc-b187-40be-9788-84c6f0093747','test2','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('38a6f4fc-b187-40be-9788-84c6f0093747','test3','1234567890');
 insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','PATATA','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','test1','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','test2','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','test3','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','test4','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','test5','1234567890');
+insert into notes_tags (note_id, tags_name, tags_user_id) values ('58a6f4fc-b187-40be-9788-84c6f0093747','test6','1234567890');

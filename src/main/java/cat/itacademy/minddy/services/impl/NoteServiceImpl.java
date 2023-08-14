@@ -69,7 +69,7 @@ public class NoteServiceImpl implements NoteService {
         try {
             var old = repo.findById(note.getId()).orElseThrow();
             var newTags= Arrays.stream(tags).toList();
-            var oldTags = tagService.getNoteTags(projectId.getUserId(), old.getId()).stream().map(TagDTO::fromEntity).toList();
+            var oldTags = tagService.getNoteTagsEntity(projectId.getUserId(), old.getId()).stream().map(TagDTO::fromEntity).toList();
             if (note.getName()!=null&&!note.getName().trim().isEmpty()&&!note.getName().equalsIgnoreCase(old.getName()))
                 old.setName(note.getName());
             if (note.getBody()!=null&&!note.getBody().trim().isEmpty()&&!note.getBody().equalsIgnoreCase(old.getBody()))
@@ -102,19 +102,19 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Page<NoteMinimal> getAllVisibleNotes(HierarchicalId projectId, int page, int pageSize) throws MinddyException {
+    public Page<NoteMinimal> getAllVisibleNotes(HierarchicalId projectId, int page, int pageSize) {
         return repo.getNotesByHolder(projectId, PageRequest.of(page,pageSize),true);
     }
 
     @Override
-    public List<NoteDTO> getSystemNotes(HierarchicalId projectId) throws MinddyException {
+    public List<NoteDTO> getSystemNotes(HierarchicalId projectId) {
         return repo.getSystemNotes(projectId.getUserId(),
                 projectId.getHolderId(),
                 projectId.getOwnId()).stream().map(NoteDTO::fromEntity).toList();
     }
 
     @Override
-    public List<NoteDTO> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException {
+    public List<NoteDTO> getTaskNotes(HierarchicalId projectId, String taskId) {
         return repo.searchByNameAndTag(
                 projectId.getUserId(),
                 taskId,
@@ -145,18 +145,18 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Page<NoteMinimal> searchNotesByTag(HierarchicalId projectId, int page, int pageSize, String[] tagNames, NoteType... types) throws MinddyException {
+    public Page<NoteMinimal> searchNotesByTag(HierarchicalId projectId, int page, int pageSize, String[] tagNames, NoteType... types) {
 //        int[] arrType = Arrays.stream(types).mapToInt(NoteType::ordinal).toArray();
         return repo.searchByTagAndType(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(),PageRequest.of(page,pageSize), tagNames,types );
     }
 
     @Override
-    public Page<NoteMinimal> searchNotesByName(HierarchicalId projectId, int page, int pageSize, String name, NoteType... types) throws MinddyException {
+    public Page<NoteMinimal> searchNotesByName(HierarchicalId projectId, int page, int pageSize, String name, NoteType... types) {
         int[] arrType = Arrays.stream(types).mapToInt(Enum::ordinal).toArray();
         return repo.searchByNameAndType(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(),PageRequest.of(page,pageSize), name,arrType );    }
 
     @Override
-    public Page<NoteMinimal> searchNotesByContent(HierarchicalId projectId, int page, int pageSize, String text, NoteType... types) throws MinddyException {
+    public Page<NoteMinimal> searchNotesByContent(HierarchicalId projectId, int page, int pageSize, String text, NoteType... types) {
         int[] arrType = Arrays.stream(types).mapToInt(Enum::ordinal).toArray();
         return repo.searchByBodyAndType(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(), PageRequest.of(page,pageSize), text,arrType );
     }
@@ -164,9 +164,9 @@ public class NoteServiceImpl implements NoteService {
 
     //-----------------------------------------------------------------------------------------------------PRIVATE METHODS
 
-    private Note generateFullEntity(HierarchicalId projectId, NoteDTO note) throws MinddyException {
+    private Note generateFullEntity(HierarchicalId projectId, NoteDTO note) {
         Project reference = em.getReference(Project.class, projectId);
-        return Note.fromDTO(note).setHolder(reference).setTags(tagService.getNoteTags(projectId.getUserId(), note.getId()));
+        return Note.fromDTO(note).setHolder(reference).setTags(tagService.getNoteTagsEntity(projectId.getUserId(), note.getId()));
     }
 
 

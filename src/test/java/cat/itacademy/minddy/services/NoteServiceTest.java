@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
-
+@DirtiesContext
 @Sql(scripts = "/testscript.sql")
 @SpringBootTest
 class NoteServiceTest {
@@ -28,7 +29,7 @@ class NoteServiceTest {
     NoteService service;
     @Autowired
     TagService tagService;
-    static HierarchicalId projectId = new HierarchicalId("1234567890", "00FFFF");
+    static HierarchicalId projectId = new HierarchicalId("1234567891", "00FFFF");
     static String taskID = "10a6f4fc-b187-40be-9788-84c6f0093747";
 
     @Test
@@ -107,7 +108,7 @@ class NoteServiceTest {
         assertDoesNotThrow(() -> {
             List<NoteDTO> allVisibleNotes = service.getSystemNotes(new HierarchicalId(projectId.getUserId(), "", "00"));
             for (NoteDTO note : allVisibleNotes) System.out.println(note.getName());
-            assertTrue("Checking default sql script number of notes", allVisibleNotes.stream().toList().isEmpty());
+            assertTrue("Checking default sql script number of notes", allVisibleNotes.stream().toList().size()==1);
         });
     }
 
@@ -144,7 +145,7 @@ class NoteServiceTest {
         var tags = new ArrayList<TagDTO>();
         for (int i = 0; i < 5; i++) {
             try {
-                tags.add(TagDTO.fromEntity(tagService.createTag(projectId.getUserId(), new TagDTO().setName("tag_test_" + i).setVisible(true).setHeritable(false))));
+                tags.add(tagService.createTag(projectId.getUserId(), new TagDTO().setName("tag_test_" + i).setVisible(true).setHeritable(false)));
             } catch (MinddyException e) {
                 throw new RuntimeException(e);
             }
@@ -171,7 +172,7 @@ class NoteServiceTest {
     @Test
     void searchNotesByTag_test() {
         var ref = new Object() {
-            List<NoteDTO> note=new ArrayList<>();
+            final List<NoteDTO> note=new ArrayList<>();
         };
         assertDoesNotThrow(() -> {
             for (int i = 0; i < 5; i++) {

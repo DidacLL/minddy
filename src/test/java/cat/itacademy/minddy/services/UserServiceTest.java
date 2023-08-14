@@ -7,12 +7,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@DirtiesContext
 @Sql(scripts = "/testscript.sql")
 @SpringBootTest
 //@Sql(scripts = "clean.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -28,7 +29,7 @@ class UserServiceTest {
     @Test
     @DisplayName("Get User Data")
     void getUserData_test() {
-        UserData res= null;
+        UserData res;
         System.out.print("Get DEFAULT user data ...");
         try {
             res = service.getUserData(LocalDate.now(),"1234567890");
@@ -63,7 +64,7 @@ class UserServiceTest {
             System.out.println("OK");
         }catch(Exception ignored){
             System.out.println("NOK");
-        };
+        }
         System.out.print("Deleting user...");
         assertTrue(service.deleteUser(false,user.getId()));
         System.out.println("OK");
@@ -77,7 +78,7 @@ class UserServiceTest {
         System.out.println("OK");
     }catch(Exception ignored){
         System.out.println("NOK");
-    };
+    }
         System.out.print("Checking user persistence...");
         assertTrue(service.existUser(user.getId()));
         System.out.println("OK");
