@@ -20,10 +20,18 @@ public class TaskDTO {
 //    private List<SubTask> subtasks;
     private TaskState state=TaskState.TODO;
     private LocalDate date;
-    private RepeatMode repetition;
+    private RepeatMode repetition=null;
     private Priority priority=Priority.NORMAL;
-    private int repeatValue;
+    private int repeatValue=0;
 //    private HierarchicalId holderID;
+
+    public TaskDTO( String name, String description, TaskState state, LocalDate date, Priority priority) {
+        this.name = name;
+        this.description = description;
+        this.state = state;
+        this.date = date;
+        this.priority = priority;
+    }
 
     public boolean isFulfilled(){
         return this.name!=null && !this.name.trim().isEmpty();

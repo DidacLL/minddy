@@ -2,7 +2,6 @@ package cat.itacademy.minddy.services;
 
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.dao.Tag;
-import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.utils.MinddyException;
 
@@ -11,26 +10,26 @@ import java.util.UUID;
 
 public interface TagService {
 
+    //Getters
     TagDTO getTag(String userId, String tagName) throws MinddyException;
 
     Tag getTagEntity(String userId, String tagName) throws MinddyException;
 
     List<TagDTO> getProjectTags(HierarchicalId projectId, boolean onlyVisible);
-    List<TagDTO> getNoteTags(String userId,String noteId,boolean onlyVisible);
-    List<TagDTO> getTaskTags(String userId,String noteId,boolean onlyVisible);
-    List<String> getTagsLike(String userId, String nameLike);
+    List<Tag> getProjectTagsEntity(HierarchicalId projectId, boolean onlyVisible);
+    List<TagDTO> getNoteTags(String userId, UUID noteId, boolean onlyVisible);
+    List<Tag> getNoteTagsEntity(String userId, UUID noteId);
+    List<TagDTO> getTaskTags(String userId, UUID taskId, boolean onlyVisible);
+    List<Tag> getTaskTagsEntity(String userId, UUID taskId, boolean onlyVisible);
+    List<String> searchTagsLike(String userId, String nameLike);
+    //Count
     int countTagUses(String userId,String tagName);
-
-    Tag createTag(String userId, TagDTO dto) throws MinddyException;
-
-
-    List<Tag> getNoteTags(String userId, UUID noteId);
-
-    List<Tag> getTagsFromList(String userId, String... tagDTOS) throws MinddyException;
-
+    //Create
+    TagDTO createTag(String userId, TagDTO dto) throws MinddyException;
     Tag createTag(String userId, String name) throws MinddyException;
+    //Update
+    TagDTO updateTag(String userId, String oldName, TagDTO newData) throws MinddyException;
 
-    List<Tag> getTagsFromList(String userId, TagDTO... tagDTOS) throws MinddyException;
+    boolean deleteTag(String userId, TagDTO tag) throws MinddyException;
 
-    NoteDTO loadTags(String userId,NoteDTO noteDTO) throws MinddyException;
 }

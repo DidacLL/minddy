@@ -2,6 +2,8 @@ package cat.itacademy.minddy.services;
 
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.TaskState;
+import cat.itacademy.minddy.data.dao.Project;
+import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.dto.TaskDTO;
 import cat.itacademy.minddy.data.dto.views.TaskExpanded;
 import cat.itacademy.minddy.data.dto.views.TaskMinimal;
@@ -19,13 +21,13 @@ public interface TaskService {
 
     Page<TaskExpanded> getProjectExpandedTasks(HierarchicalId projectId, int pageSize, int page, TaskState... notIn)throws MinddyException;
 
-    TaskMinimal getMinimalTask(String userId,String taskId) throws MinddyException;
-    TaskExpanded getExpandedTask(String userId,String taskId) throws MinddyException;
-    TaskDTO getTask(String userId,String taskId) throws MinddyException;
+    TaskMinimal getMinimalTask(String userId, UUID taskId) throws MinddyException;
+    TaskExpanded getExpandedTask(String userId, UUID taskId) throws MinddyException;
+    TaskDTO getTask(String userId, UUID taskId) throws MinddyException;
 
-    TaskDTO createNewTask(HierarchicalId holderID,TaskDTO dto) throws MinddyException;
+    TaskDTO createNewTask(Project project, TaskDTO dto, TagDTO... tags) throws MinddyException;
 
-    TaskDTO updateTask(HierarchicalId holderID, TaskDTO dto) throws MinddyException;
+    TaskDTO updateTask(HierarchicalId holderID, TaskDTO dto, TagDTO ... tags) throws MinddyException;
 
     void deleteTask(HierarchicalId holderId,UUID id) throws MinddyException;
 

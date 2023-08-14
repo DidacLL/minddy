@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +29,6 @@ public class Task implements Taggable<Task> {
     @Id
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @ManyToOne
     @JoinColumns({
@@ -46,13 +45,13 @@ public class Task implements Taggable<Task> {
     private String description;
     @Convert(converter = SubTaskListConverter.class)
     @Column(columnDefinition = "JSON")
-    private List<SubTask> subtasks;
+    private List<SubTask> subtasks=new ArrayList<>();
     //-------------------------PROJECT STATE
     @Enumerated
     @Column(nullable = false,name = "state")
     private TaskState state;
     //------------------------- DEAD LINE
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+//    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate date=null;
     @Embedded
     private DateLog dateLog;
@@ -62,7 +61,8 @@ public class Task implements Taggable<Task> {
     @Enumerated
     private Priority priority;
 
-    private int repeatValue,repeatLimit;
+    private int repeatValue=0;
+    private int repeatLimit=0;
 
     /**Entity builder method, it only sets independent fields, holder value must be set externally before persist
      * @param dto Fulfilled TaskDTO non dependent fields

@@ -26,7 +26,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     TagRepository tagRepository;
     @Override
-    public ProjectDTO createRootProject(String userId, String uiConfig, String userName, Tag rootTag) {
+    public ProjectDTO createRootProject(String userId, String uiConfig, String userName, TagDTO rootTag) {
 
            var root= new ProjectDTO()
                    .setId(new HierarchicalId().setOwnId("00").setUserId(userId).setHolderId(""))
@@ -39,11 +39,11 @@ public class ProjectServiceImpl implements ProjectService {
 
 
 
-        return ProjectDTO.fromEntity(repo.save(Project.fromDTO(root).addTag(rootTag)));
+        return ProjectDTO.fromEntity(repo.save(Project.fromDTO(root).addTag(Tag.fromDTO(rootTag,userId))));
     }
 
     @Override
-    public ProjectDTO createProject(ProjectDTO dto) throws MinddyException {
+    public ProjectDTO createProject(ProjectDTO dto,TagDTO ...tags) throws MinddyException {
         if(!dto.isFullFilled())throw new MinddyException(400,"Request does not have proper data");
         //Find Parent
         var parent = repo.findById(new HierarchicalId(dto.getId().getUserId(),dto.getId().getHolderId()))
@@ -60,8 +60,9 @@ public class ProjectServiceImpl implements ProjectService {
         String newId= lastSubprojectID.map(s -> Integer.toHexString((Integer.parseInt(s, 16) - 1)))
                 .orElse("FF");
         dto.setId(dto.getId().setOwnId(newId));
+
         //Save it
-        return ProjectDTO.fromEntity(repo.save(Project.fromDTO(dto)));
+        return ProjectDTO.fromEntity(repo.save(Project.fromDTO(dto,tags)));
     }
 
     @Override
@@ -86,8 +87,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDTO updateProject(ProjectDTO dto, TagDTO... tags) throws MinddyException {
         var oldProject= getProject(dto.getId());
-        Set<TagDTO> oldTags = tagRepository.getAllProjectTags(oldProject.getId().getUserId(), oldProject.getId().getHolderId(), oldProject.getId().getOwnId(), true).stream().map(TagDTO::fromEntity).collect(Collectors.toSet());
-        oldTags.addAll(tagRepository.getAllProjectTags(oldProject.getId().getUserId(),oldProject.getId().getHolderId(),oldProject.getId().getOwnId(),false).stream().map(TagDTO::fromEntity).toList());
+        Set<TagDTO> oldTags = tagRepository.getProjectTags(oldProject.getId().getUserId(), oldProject.getId().getHolderId(), oldProject.getId().getOwnId(), true).stream().map(TagDTO::fromEntity).collect(Collectors.toSet());
+        oldTags.addAll(tagRepository.getProjectTags(oldProject.getId().getUserId(),oldProject.getId().getHolderId(),oldProject.getId().getOwnId(),false).stream().map(TagDTO::fromEntity).toList());
         //CHECK NAME
         if(dto.getName()!=null && !dto.getName().trim().isEmpty() && !dto.getName().equalsIgnoreCase(oldProject.getName()))
             oldProject.setName(dto.getName());
@@ -128,5 +129,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteProject(HierarchicalId hierarchicalId) {
 
+    }
+
+    @Override
+    public Project getProjectEntity(HierarchicalId projectId) throws MinddyException {
+        return repo.findById(projectId).orElseThrow(()->new MinddyException(404,"Project not found"));
     }
 }

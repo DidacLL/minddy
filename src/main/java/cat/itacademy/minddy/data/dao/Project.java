@@ -36,17 +36,6 @@ public class Project implements Notable, Taggable<Project> {
     private ProjectState state = ProjectState.ACTIVE;
     private LocalDate deadLine = null;
     @ManyToMany
-//    @JoinTable(name = "projects_tags",
-//            joinColumns = {
-//                    @JoinColumn(name = "project_user"),
-//                    @JoinColumn(name = "project_parent"),
-//                    @JoinColumn(name = "project_id")
-//            },
-//            inverseJoinColumns ={
-//                    @JoinColumn(name = "tag_user"),
-//                    @JoinColumn(name = "tag_name")
-//            }
-//    )
     private Set<Tag> tags = new HashSet<>();
     @OneToMany(mappedBy = "holder", cascade = CascadeType.ALL)
     private Set<Task> tasks = new HashSet<>();

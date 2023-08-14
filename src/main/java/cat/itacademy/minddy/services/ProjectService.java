@@ -1,7 +1,7 @@
 package cat.itacademy.minddy.services;
 
 import cat.itacademy.minddy.data.config.HierarchicalId;
-import cat.itacademy.minddy.data.dao.Tag;
+import cat.itacademy.minddy.data.dao.Project;
 import cat.itacademy.minddy.data.dto.ProjectDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.html.ProjectStructure;
@@ -18,10 +18,10 @@ public interface ProjectService {
      * @param userId   the new user id
      * @param uiConfig frontend configuration (json string)
      * @param userName the new user preferred name
-     * @param rootTag
+     * @param rootTag Root TagDTO from current user
      * @return the root ProjectDTO
      */
-    ProjectDTO createRootProject(String userId, String uiConfig, String userName, Tag rootTag);
+    ProjectDTO createRootProject(String userId, String uiConfig, String userName, TagDTO rootTag);
 
     /**Create Project, needs a dto filled with all not null values
      *  except id.ownId that is set automatically by this method
@@ -29,7 +29,7 @@ public interface ProjectService {
      * @return resulting project DTO if success
      * @throws MinddyException otherwise
      */
-    ProjectDTO createProject(ProjectDTO dto) throws MinddyException;
+    ProjectDTO createProject(ProjectDTO dto, TagDTO ... tags) throws MinddyException;
 
     /**Method that retrieves the project structure
      * @param userID UserID obtained from authentication
@@ -51,4 +51,5 @@ public interface ProjectService {
     List<String> getAllSubprojectsID(HierarchicalId hierarchicalId);
     void deleteProject(HierarchicalId hierarchicalId);
 
+    Project getProjectEntity(HierarchicalId projectId) throws MinddyException;
 }
