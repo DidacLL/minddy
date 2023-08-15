@@ -18,8 +18,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-@Entity @Table(name = "tasks", indexes = {
+@Entity
+@Table(name = "tasks", indexes = {
         @Index(name = "idx_task_state",columnList ="state")
 })
 

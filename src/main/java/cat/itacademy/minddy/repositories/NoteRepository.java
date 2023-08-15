@@ -114,23 +114,23 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
          """)
     Page<NoteMinimal> searchByTagAndType(String userId, String parentId, String holderId, Pageable pageRequest, String[] tagNames, NoteType...types);
 
-    @Query(nativeQuery = true,value = """
-    SELECT nt.note_id,n.name  FROM notes_tags nt NATURAL JOIN notes n
-    WHERE n.user=:userId AND n.is_visible AND n.type IN :types AND(
-        (n.parent_id=:parentId AND n.holder_id=:holderId)
-        OR (n.parent_id LIKE CONCAT(:parentId,:holderId,'%'))
+    @Query(value = """
+    SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id,n.name)  FROM Note n
+    WHERE n.holder.id.userId=:userId AND n.isVisible AND n.type IN :types AND(
+        (n.holder.id.holderId=:parentId AND n.holder.id.ownId=:holderId)
+        OR (n.holder.id.holderId LIKE CONCAT(:parentId,:holderId,'%'))
         AND  n.name LIKE CONCAT('%',:name,'%')
-    ) ORDER BY n.update_date DESC
+    )
 """)
-    Page<NoteMinimal> searchByNameAndType(String userId, String parentId, String holderId, Pageable pageable, String name, int... types);
+    Page<NoteMinimal> searchByNameAndType(String userId, String parentId, String holderId, Pageable pageable, String name, NoteType... types);
 
-    @Query(nativeQuery = true,value = """
-    SELECT nt.note_id,n.name  FROM notes_tags nt NATURAL JOIN notes n
-    WHERE n.user=:userId AND n.is_visible AND n.type IN :types AND(
-        (n.parent_id=:parentId AND n.holder_id=:holderId)
-        OR (n.parent_id LIKE CONCAT(:parentId,:holderId,'%'))
-        AND n.body LIKE CONCAT('%',:text,'%')
-    ) ORDER BY n.update_date DESC
+    @Query(value = """
+     SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id,n.name)  FROM Note n
+    WHERE n.holder.id.userId=:userId AND n.isVisible AND n.type IN :types AND(
+        (n.holder.id.holderId=:parentId AND n.holder.id.ownId=:holderId)
+        OR (n.holder.id.holderId LIKE CONCAT(:parentId,:holderId,'%'))
+        AND  n.name LIKE CONCAT('%',:text,'%')
+    )
 """)
-    Page<NoteMinimal> searchByBodyAndType(String userId, String parentId, String holderId,Pageable pageable, String text, int... types);
+    Page<NoteMinimal> searchByBodyAndType(String userId, String parentId, String holderId,Pageable pageable, String text, NoteType... types);
 }

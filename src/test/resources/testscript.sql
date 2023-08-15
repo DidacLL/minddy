@@ -240,10 +240,10 @@ values ('11a6f4fc-b187-40be-9788-84c6f0093740',DATE_SUB(CURDATE(), INTERVAL 1 DA
 
 
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('12a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 2 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Third one',4,0,0,0,0,'{}','00FFFF','FF','1234567890');
+values ('12a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 3 DAY),curdate(),curdate(),'How Awesome, that`s my third task :`)','Test 3DAYS P:4',4,0,0,0,0,'{}','00FFFF','FF','1234567890');
 
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
-values ('13a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 1 DAY),curdate(),curdate(),'How Awesome, that`s my first task :`)','First one',2,0,0,0,0,'{}','00FF','FE','1234567891');
+values ('13a6f4fc-b187-40be-9788-84c6f0093747',DATE_ADD(CURDATE(), INTERVAL 3 DAY),curdate(),curdate(),'How Awesome, that`s my first task :`)','NOT TODAY',2,0,0,0,0,'{}','00FF','FE','1234567891');
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)
 values ('14a6f4fc-b187-40be-9788-84c6f0093747',CURDATE(),curdate(),curdate(),'How Awesome, that`s my second task :`)','Second one',2,0,0,0,0,'{}','00FF','FF','1234567891');
 insert into tasks (id, date, creation_date, update_date, description, name, priority, repeat_limit, repeat_value, repetition, state, subtasks, parent_id, holder_id, user)

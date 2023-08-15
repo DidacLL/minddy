@@ -1,5 +1,6 @@
 package cat.itacademy.minddy.services.impl;
 
+import cat.itacademy.minddy.data.config.DefaultTags;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.TaskState;
 import cat.itacademy.minddy.data.dao.Project;
@@ -13,13 +14,12 @@ import cat.itacademy.minddy.repositories.TaskRepository;
 import cat.itacademy.minddy.services.TagService;
 import cat.itacademy.minddy.services.TaskService;
 import cat.itacademy.minddy.utils.MinddyException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -27,8 +27,6 @@ import java.util.*;
 public class TaskServiceImpl implements TaskService {
     @Autowired
     TaskRepository repo;
-    @PersistenceContext
-    private EntityManager em;
     @Autowired
     private TagService tagService;
 
@@ -44,33 +42,35 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Page<TaskMinimal> getAllProjectMinTasks(HierarchicalId projectId, TaskState... notIn) {
-        if(notIn==null||notIn.length==0)return repo.getProjectMinimalTasks(projectId.getUserId(),
+        if (notIn == null || notIn.length == 0) return repo.getProjectMinimalTasks(projectId.getUserId(),
                 projectId.toString(),
                 PageRequest.of(0, Integer.MAX_VALUE));
-        if(notIn.length==1)return repo.getProjectMinimalTasks(projectId.getUserId(),
+        if (notIn.length == 1) return repo.getProjectMinimalTasks(projectId.getUserId(),
                 projectId.toString(),
-                PageRequest.of(0, Integer.MAX_VALUE),notIn[0]);
+                PageRequest.of(0, Integer.MAX_VALUE), notIn[0]);
         return repo.getProjectMinimalTasks(projectId.getUserId(),
                 projectId.toString(),
-                PageRequest.of(0, Integer.MAX_VALUE),notIn);
+                PageRequest.of(0, Integer.MAX_VALUE), notIn);
 
     }
 
     @Override
     public Page<TaskMinimal> getTodayTasks(String userID, LocalDate date, int pageSize, int page) {
-        return repo.getTodayTasks(userID, date, PageRequest.of(page, pageSize));
+        Date date1 = Date.valueOf(date);
+        System.out.println(date1);
+        return repo.getTodayTasksNative(userID, date, PageRequest.of(page, pageSize)).map(TaskMinimal::fromTuple);
     }
 
     @Override
     public Page<TaskExpanded> getProjectExpandedTasks(HierarchicalId projectId, int pageSize, int page, TaskState... notIn) {
-        if(notIn==null||notIn.length==0)return repo.getProjectExpandedTasks(projectId.getUserId(),
+        if (notIn == null || notIn.length == 0) return repo.getProjectExpandedTasks(projectId.getUserId(),
                 projectId.toString(),
                 PageRequest.of(page, pageSize));
-        if(notIn.length==1)return repo.getProjectExpandedTasks(projectId.getUserId(),
+        if (notIn.length == 1) return repo.getProjectExpandedTasks(projectId.getUserId(),
                 projectId.toString(),
                 PageRequest.of(page, pageSize),
                 notIn[0]);
-        return  repo.getProjectExpandedTasks(projectId.getUserId(),
+        return repo.getProjectExpandedTasks(projectId.getUserId(),
                 projectId.toString(),
                 PageRequest.of(page, pageSize),
                 notIn);
@@ -82,7 +82,7 @@ public class TaskServiceImpl implements TaskService {
             return TaskDTO.fromEntity(
                     repo.save(Task.fromDTO(dto)
                             .setHolder(project)
-                            .setTags(tags.length>0?Arrays.stream(tags).map((x)->Tag.fromDTO(x, project.getId().getUserId())).toList():new ArrayList<>())));
+                            .setTags(tags.length > 0 ? Arrays.stream(tags).map((x) -> Tag.fromDTO(x, project.getId().getUserId())).toList() : new ArrayList<>())));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             //FIXME
@@ -106,10 +106,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO updateTask(HierarchicalId holderID, TaskDTO dto, TagDTO ... tags) throws MinddyException {
+    public TaskDTO updateTask(HierarchicalId holderID, TaskDTO dto, TagDTO... tags) throws MinddyException {
         var old = repo.getTask(holderID.getUserId(), dto.getId()).orElseThrow(() -> new MinddyException(404, "task " + holderID + " not found"));
-        Set<Tag> oldTags = new HashSet<>(tagService.getTaskTags(holderID.getUserId(), old.getId(), true).stream().map((x)->Tag.fromDTO(x, holderID.getUserId())).toList());
-        oldTags.addAll(tagService.getTaskTags(holderID.getUserId(),old.getId(),false).stream().map((x)->Tag.fromDTO(x, holderID.getUserId())).toList());
+        Set<Tag> oldTags = new HashSet<>(tagService.getTaskTags(holderID.getUserId(), old.getId(), true).stream().map((x) -> Tag.fromDTO(x, holderID.getUserId())).toList());
+        oldTags.addAll(tagService.getTaskTags(holderID.getUserId(), old.getId(), false).stream().map((x) -> Tag.fromDTO(x, holderID.getUserId())).toList());
         //CHECK NAME
         if (dto.getName() != null && !dto.getName().trim().isEmpty()) old.setName(dto.getName());
         if (dto.getDescription() != null && !dto.getDescription().trim().isEmpty())
@@ -118,15 +118,14 @@ public class TaskServiceImpl implements TaskService {
         if (dto.getPriority() != null && !dto.getPriority().equals(old.getPriority()))
             old.setPriority(dto.getPriority());
         //CHECK TAGS
-        if(tags!=null && tags.length>0)
-            oldTags.addAll(Arrays.stream(tags).map((x)->Tag.fromDTO(x, holderID.getUserId())).toList());
+        if (tags != null && tags.length > 0)
+            oldTags.addAll(Arrays.stream(tags).map((x) -> Tag.fromDTO(x, holderID.getUserId())).toList());
         //CHECK Date
         if (dto.getDate() != null && !dto.getDate().equals(old.getDate())) {
-            // FIXME: 02/08/2023 call to TagService to retrieve DELAYED TASK
-            //  if(dto.getDate().isAfter(old.getDate()))dto.addTag(DefaultTags.DELAYED);
+            if (dto.getDate().isAfter(old.getDate())) oldTags.add(Tag.fromDTO(tagService.getTag(holderID.getUserId(), DefaultTags.DELAYED.getTagName())));
             old.setDate(dto.getDate());
         }
-        return TaskDTO.fromEntity(repo.save(old.addTag(oldTags.toArray(Tag[]::new))));
+        return TaskDTO.fromEntity(repo.save(old.setTags(oldTags.stream().toList())));
     }
 
     @Override
@@ -139,18 +138,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public int countUserTasks(String userId, TaskState... notIn) {
-        if(notIn==null||notIn.length==0)return repo.countUserTasks(userId);
-        if(notIn.length==1)return repo.countUserTasks(userId,notIn[0].ordinal());
-        return repo.countUserTasks(userId,  Arrays.stream(notIn)
+        if (notIn == null || notIn.length == 0) return repo.countUserTasks(userId);
+        if (notIn.length == 1) return repo.countUserTasks(userId, notIn[0].ordinal());
+        return repo.countUserTasks(userId, Arrays.stream(notIn)
                 .mapToInt(Enum::ordinal)
                 .toArray());
     }
 
     @Override
     public int countProjectTasks(HierarchicalId projectId, TaskState... notIn) {
-        if(notIn==null||notIn.length==0) return repo.countProjectTasks(projectId.getUserId(),projectId.toString());
-        if(notIn.length==1) return repo.countProjectTasks(projectId.getUserId(),projectId.toString(),notIn[0]);
-        return repo.countProjectTasks(projectId.getUserId(),projectId.toString(),notIn);
+        if (notIn == null || notIn.length == 0)
+            return repo.countProjectTasks(projectId.getUserId(), projectId.toString());
+        if (notIn.length == 1) return repo.countProjectTasks(projectId.getUserId(), projectId.toString(), notIn[0]);
+        return repo.countProjectTasks(projectId.getUserId(), projectId.toString(), notIn);
     }
 
 
