@@ -190,10 +190,12 @@ class NoteServiceTest {
 
     @Test
     void searchNotesByName_test() {
+        assertDoesNotThrow(()-> assertFalse(service.searchNotesByName(projectId,0,Integer.MAX_VALUE,"Dummy").isEmpty()));
     }
 
     @Test
     void searchNotesByContent_test() {
+        assertDoesNotThrow(()-> assertFalse(service.searchNotesByContent(projectId,0,Integer.MAX_VALUE,"This is a task note").isEmpty()));
     }
 
 }
