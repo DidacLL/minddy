@@ -11,16 +11,27 @@ import java.util.UUID;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, TagId> {
-    @Query(nativeQuery = true, value = """
-                SELECT * FROM projects_tags tp
-                    NATURAL JOIN tags t
-                    WHERE t.user_id= :userId
-                    AND tp.project_holder_id= :projectParentId
-                    AND tp.project_own_id= :projectOwnId
-                    AND t.is_visible = :visible
-                    ORDER BY (SELECT COUNT(*) FROM projects_tags tp2 WHERE tp2.tags_name = t.name AND tp2.tags_user_id=t.user_id) DESC
+//    @Query(nativeQuery = true, value = """
+//                SELECT * FROM projects_tags tp
+//                    NATURAL JOIN tags t
+//                    WHERE t.user_id= :userId
+//                    AND tp.project_holder_id= :projectParentId
+//                    AND tp.project_own_id= :projectOwnId
+//                    AND t.is_visible = :visible
+//                    ORDER BY (SELECT COUNT(*) FROM projects_tags tp2 WHERE tp2.tags_name = t.name AND tp2.tags_user_id=t.user_id) DESC
+//
+//            """)
+    @Query( value = """
+            SELECT t FROM Project p JOIN p.tags t
+            WHERE t.id.userId = :userId
+            AND p.id.holderId = :projectParentId
+            AND p.id.ownId = :projectOwnId
+            AND t.isVisible = :visible
+            ORDER BY (
+                SELECT COUNT(*) FROM Project p2 JOIN p2.tags t2 WHERE t2.id.name = t.id.name AND t2.id.userId = t.id.userId
+            ) DESC, t.id.name
 
-            """)
+                        """)
     List<Tag> getProjectTags(String userId, String projectParentId, String projectOwnId, boolean visible);
     @Query(value = """
                 SELECT n.tags FROM Note n JOIN n.tags t WHERE n.holder.id.userId= :userId AND n.id=:noteId AND t.isVisible=:isVisible
