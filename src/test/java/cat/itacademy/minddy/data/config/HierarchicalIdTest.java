@@ -10,7 +10,7 @@ class HierarchicalIdTest {
 
     @Test
     void getFirstParent_test() {
-        assertEquals("IJ", id.getFirstParent());
+        assertEquals("IJ", id.getFirstParentOwnId());
     }
 
     @Test

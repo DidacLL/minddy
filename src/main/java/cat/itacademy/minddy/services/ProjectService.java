@@ -47,7 +47,7 @@ public interface ProjectService {
 
 
     ProjectDTO updateProject(ProjectDTO dto, TagDTO... tags) throws MinddyException;
-    ProjectDTO getAllSubProjects(HierarchicalId hierarchicalId);
+    List<ProjectDTO> getAllSubProjects(HierarchicalId hierarchicalId);
     List<String> getAllSubprojectsID(HierarchicalId hierarchicalId);
     void deleteProject(HierarchicalId hierarchicalId);
 

@@ -72,36 +72,8 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                 JOIN projects p ON t.parent_id = p.holder_id AND t.holder_id = p.own_id AND t.user = p.user_id
                 WHERE t.user = :userId
                 AND t.state<=3 AND t.date <= ADDDATE(:date, INTERVAL t.priority DAY)
-            """, nativeQuery = true,name = "getTodayTasksNative")
+            """, nativeQuery = true)
     Page<Object[]> getTodayTasksNative(String userId, LocalDate date, Pageable pageable);
-//
-//    @Query(value = """
-//                        SELECT NEW cat.itacademy.minddy.data.dto.views.TaskMinimal(
-//                        t.id,
-//                        t.date,
-//                        CONCAT(t.holder.id.holderId,t.holder.id.ownId),
-//                        t.name,
-//                        t.holder.name
-//                    )
-//                    FROM Task t
-//                    WHERE t.holder.id.userId= :userId
-//                    AND t.state NOT IN (
-//                        cat.itacademy.minddy.data.config.TaskState.DISCARDED,
-//                        cat.itacademy.minddy.data.config.TaskState.DONE
-//                        )
-//                    AND t.date <=FUNCTION('DATE_ADD',:date, INTERVAL 1 DAY)
-//            """)
-////                     (
-////                    CASE t.priority
-////                    WHEN cat.itacademy.minddy.data.config.Priority.LOW THEN adddate(:date,1)
-////                    WHEN cat.itacademy.minddy.data.config.Priority.NORMAL THEN  adddate(:date,2)
-////                    WHEN cat.itacademy.minddy.data.config.Priority.HIGH THEN  adddate(:date,3)
-////                    WHEN cat.itacademy.minddy.data.config.Priority.HIGHER THEN  adddate(:date,4)
-////                    ELSE :date
-////                    END
-////                    )
-//    Page<TaskMinimal> getTodayTasks(String userId, Date date, Pageable pageable);
-
     @Query(value = """
             SELECT NEW cat.itacademy.minddy.data.dto.views.TaskExpanded(
                 t.id,

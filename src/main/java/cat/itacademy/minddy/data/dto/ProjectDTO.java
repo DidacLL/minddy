@@ -3,6 +3,7 @@ package cat.itacademy.minddy.data.dto;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.ProjectState;
 import cat.itacademy.minddy.data.dao.Project;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,13 +11,14 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class ProjectDTO {
     private HierarchicalId id;
     private String name;
     private String description;
-    private ProjectState state;
+    private ProjectState state=ProjectState.ACTIVE;
     private LocalDate deadLine;
 //    private List<ProjectTracker> trackers;
     private String uiConfig;

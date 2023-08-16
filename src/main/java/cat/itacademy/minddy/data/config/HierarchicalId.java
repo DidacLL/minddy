@@ -1,5 +1,6 @@
 package cat.itacademy.minddy.data.config;
 
+import cat.itacademy.minddy.data.dto.ProjectDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ public class HierarchicalId implements Serializable {
         return result;
     }
 
-    public String getFirstParent(){
+    public String getFirstParentOwnId(){
         int length = holderId.length();
         if(length >=2&& length %2==0) return holderId.substring(length -2);
         return null;
@@ -67,7 +68,9 @@ public class HierarchicalId implements Serializable {
         }
         return null;
     }
-
+    public ProjectDTO generateChildBase(){
+        return new ProjectDTO().setId(new HierarchicalId(this.userId,this.toString(),"XX"));
+    }
     @Override
     public String toString() {
         return holderId+ ownId;
