@@ -52,4 +52,54 @@ public interface ProjectRepository extends JpaRepository<Project, HierarchicalId
     ORDER BY CASE WHEN p.deadLine IS NULL THEN 0 ELSE 1 END, p.deadLine ASC
 """)
     List<ProjectDTO> getAllSubProjects(String userId, String holderId, String ownId);
+
+    @Query(value = """
+    SELECT COUNT(*) FROM Project p WHERE p.id.userId = :userId AND p.id.holderId= :parentId
+""")
+    int countChildren(String userId, String parentId);
+
+    @Query("""
+    SELECT NEW cat.itacademy.minddy.data.dto.views.ProjectMinimal(
+        p.id.holderId,
+        p.id.ownId,
+        p.name,
+        COUNT(n),
+        COUNT(t),
+        p.uiConfig
+    )
+    FROM Project p
+    LEFT JOIN p.notes n
+    LEFT JOIN p.tasks t
+        ON t.state NOT IN (
+            cat.itacademy.minddy.data.config.TaskState.DISCARDED,
+            cat.itacademy.minddy.data.config.TaskState.DONE
+        )
+    WHERE p.id.userId = :userId AND p.state NOT IN (cat.itacademy.minddy.data.config.ProjectState.DISCARDED,
+        cat.itacademy.minddy.data.config.ProjectState.COMPLETE)
+    AND p.id.holderId=:parentId
+    GROUP BY p
+    ORDER BY p.deadLine ASC
+    
+""")
+    List<ProjectMinimal> getImmediateSubprojects(String userId, String parentId);
+    @Query("""
+    SELECT NEW cat.itacademy.minddy.data.dto.views.ProjectMinimal(
+        p.id.holderId,
+        p.id.ownId,
+        p.name,
+        COUNT(n),
+        COUNT(t),
+        p.uiConfig
+    )
+    FROM Project p
+    LEFT JOIN p.notes n
+    LEFT JOIN p.tasks t
+        ON t.state NOT IN (
+            cat.itacademy.minddy.data.config.TaskState.DISCARDED,
+            cat.itacademy.minddy.data.config.TaskState.DONE
+        )
+    WHERE p.id= :id
+    GROUP BY p.id.holderId, p.id.ownId, p.name, p.uiConfig
+""")
+    Optional<ProjectMinimal> getProjectMin(HierarchicalId id );
 }

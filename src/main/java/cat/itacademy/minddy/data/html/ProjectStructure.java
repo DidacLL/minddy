@@ -6,16 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class ProjectStructure {
     private LocalDate date;
-    private List<ProjectMinimal> data;
+    private ProjectNode projectTree;
 
-    public void addProject(ProjectMinimal project){
-        this.data.add(project);
+    public ProjectStructure addProject(ProjectMinimal project){
+        // TODO: 17/08/2023  
+        return this;
     }
-
 }

@@ -6,11 +6,13 @@ import cat.itacademy.minddy.data.dao.Project;
 import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dto.ProjectDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
+import cat.itacademy.minddy.data.html.ProjectNode;
 import cat.itacademy.minddy.data.html.ProjectStructure;
 import cat.itacademy.minddy.repositories.ProjectRepository;
 import cat.itacademy.minddy.repositories.TagRepository;
 import cat.itacademy.minddy.services.ProjectService;
 import cat.itacademy.minddy.utils.MinddyException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public ProjectDTO createProject(ProjectDTO dto, TagDTO... tags) throws MinddyException {
         if (!dto.isFullFilled()) throw new MinddyException(400, "Request does not have proper data");
         //Find Parent
@@ -66,11 +69,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectStructure getProjectStructure(String userID, LocalDate today) {
-        return new ProjectStructure(
-                today,
-                repo.getAllProjectsMin(userID, ProjectState.DISCARDED, ProjectState.COMPLETE)
-        );
+    public ProjectStructure getProjectStructure(String userID, LocalDate today) throws MinddyException {
+        HierarchicalId rootID = new HierarchicalId().setOwnId("00").setUserId(userID).setHolderId("");
+        return new ProjectStructure(today,getNode(rootID));
+    }
+    private ProjectNode getNode(HierarchicalId parentId) throws MinddyException {
+        var node= new ProjectNode(repo.getProjectMin(parentId).orElseThrow(()->new MinddyException(418, "Fatal unexpected error, root project malformed")));
+        var child= repo.getImmediateSubprojects(parentId.getUserId(), node.getProject().getOwnerID()+node.getProject().getProjectID());
+        for(var p : child){
+            node.addChild(getNode(new HierarchicalId(parentId.getUserId(),p.getOwnerID()+p.getProjectID())));
+        }
+        return node;
     }
 
     @Override

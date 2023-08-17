@@ -36,7 +36,7 @@ public interface ProjectService {
      * @param today Today date sent by front-end to keep user Locale
      * @return ProjectStructure that contains all projects from user (does not include DISCARDED or COMPLETED projects)
      */
-    ProjectStructure getProjectStructure(String userID, LocalDate today);
+    ProjectStructure getProjectStructure(String userID, LocalDate today) throws MinddyException;
 
     /**Internal method that looks for the projectDTO
      * @param hierarchicalId UserID, HolderID and own ID

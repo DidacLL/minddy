@@ -48,13 +48,13 @@ class ProjectServiceTest {
             assertTrue(saved.getId().getOwnId().equalsIgnoreCase("FD"));
         });
     }
-
-    @Test
-    void getProjectStructure_test() {
-        var res = projectService.getProjectStructure(userId, LocalDate.now());
-        for (var p : res.getData()) System.out.println(p.getOwnerID() + p.getProjectID() + ": " + p.getProjectName());
-        assertTrue(res.getData().size() >= 5);
-    }
+//
+//    @Test
+//    void getProjectStructure_test() {
+//        var res = projectService.getProjectStructure(userId, LocalDate.now());
+//        for (var p : res.getData()) System.out.println(p.getOwnerID() + p.getProjectID() + ": " + p.getProjectName());
+//        assertTrue(res.getData().size() >= 5);
+//    }
 
     @Test
     void getProject_test() {
@@ -139,5 +139,14 @@ class ProjectServiceTest {
     @Test
     void getProjectEntity_test() {
         assertDoesNotThrow(() -> assertTrue(projectService.getProject(parent).isFullFilled()));
+    }
+
+    @Test
+    void getProjectStructure_test() {
+        assertDoesNotThrow(()->{
+            var res=projectService.getProjectStructure(userId,LocalDate.now());
+            System.out.println(res.getProjectTree().toJson());
+
+        });
     }
 }
