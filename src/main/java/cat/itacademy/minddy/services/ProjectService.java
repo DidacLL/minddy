@@ -52,4 +52,6 @@ public interface ProjectService {
     void deleteProject(HierarchicalId hierarchicalId);
 
     Project getProjectEntity(HierarchicalId projectId) throws MinddyException;
+
+    List<String> getNearToDeadLine(String userId, LocalDate today);
 }

@@ -144,4 +144,9 @@ public class ProjectServiceImpl implements ProjectService {
     public Project getProjectEntity(HierarchicalId projectId) throws MinddyException {
         return repo.findById(projectId).orElseThrow(() -> new MinddyException(404, "Project not found"));
     }
+
+    @Override
+    public List<String> getNearToDeadLine(String userId, LocalDate today) {
+        return repo.getProjectsByNearestDeadLine(userId,today);
+    }
 }

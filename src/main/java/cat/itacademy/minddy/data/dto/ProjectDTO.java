@@ -3,6 +3,7 @@ package cat.itacademy.minddy.data.dto;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.ProjectState;
 import cat.itacademy.minddy.data.dao.Project;
+import cat.itacademy.minddy.data.dto.views.ProjectData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,14 @@ public class ProjectDTO {
                 .setState(entity.getState())
                 .setDeadLine(entity.getDeadLine())
                 .setUiConfig(entity.getUiConfig());
+    }
+    public static ProjectDTO fromData(String userId, ProjectData data) {
+        return new ProjectDTO().setId(new HierarchicalId(userId,data.getOwnerID(),data.getProjectID()))
+                .setName(data.getProjectName())
+                .setDescription(data.getDescription())
+                .setState(data.getState())
+                .setDeadLine(data.getDeadLine())
+                .setUiConfig(data.getUiConfig());
     }
 
 

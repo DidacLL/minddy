@@ -5,13 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @Getter
 public class TodayReport {
     private LocalDate date;
-    private ArrayList<TaskMinimal> tasks;
-    private int missedTasks;
-    private String[] nearDeathLines;
+    private List<TaskMinimal> tasks;
+    private List<TaskMinimal> missedTasks;
+    private List<String> nearDeathLines;
 
 }

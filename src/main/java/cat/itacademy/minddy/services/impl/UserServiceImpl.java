@@ -26,12 +26,12 @@ public class UserServiceImpl implements UserService {
     TagService tagService;
 
     @Override
-    public UserData getUserData(LocalDate today, String userId) throws Exception {
+    public UserData getUserData(LocalDate today, String userId) throws MinddyException {
 
-        return UserData.fromEntity(repository.findById(userId).orElseThrow(() -> new Exception(userId + " does not exist")));
+        return UserData.fromEntity(repository.findById(userId).orElseThrow(() -> new MinddyException(404,userId + " does not exist")));
     }
     @Transactional
-    public UserData registerNewUser(String userId, String userName, String uiConfig) throws Exception {
+    public UserData registerNewUser(String userId, String userName, String uiConfig) throws MinddyException {
         if(existUser(userId))throw new MinddyException(418,"I'm a Teapot!");
         tagService.createTag(userId, DefaultTags.DELAYED.toDTO());
         tagService.createTag(userId,DefaultTags.FAVOURITE.toDTO());
@@ -74,5 +74,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existUser(String userId) {
         return repository.existsById(userId);
+    }
+
+    @Override
+    public UserData updateUser(String userId, String uiConfig) throws MinddyException {
+        if(uiConfig==null || uiConfig.isEmpty())throw new MinddyException(418,"Bad Request");
+        var user= repository.findById(userId).orElseThrow(()->new MinddyException(404,"User Not Found"));
+        repository.save(user.setUiConfig(uiConfig));
+        return getUserData(LocalDate.now(), userId);
     }
 }

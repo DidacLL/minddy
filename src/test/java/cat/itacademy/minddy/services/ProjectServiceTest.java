@@ -145,7 +145,7 @@ class ProjectServiceTest {
     void getProjectStructure_test() {
         assertDoesNotThrow(()->{
             var res=projectService.getProjectStructure(userId,LocalDate.now());
-            System.out.println(res.getProjectTree().toJson());
+            System.out.println(res.getRoot().toJson());
 
         });
     }

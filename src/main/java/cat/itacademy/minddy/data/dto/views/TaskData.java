@@ -10,18 +10,18 @@ import java.time.LocalDate;
 import java.util.UUID;
 @AllArgsConstructor
 @Getter
-public class TaskExpanded {
+public class TaskData {
     private UUID id;
     private String name;
     private String description;
     private LocalDate date;
-    private String owner;
+    private String holder;
     private TaskState state;
     private Priority priority;
     private String holderName;
 
-    public static TaskExpanded fromEntity(Task task){
-        return new TaskExpanded(
+    public static TaskData fromEntity(Task task){
+        return new TaskData(
                 task.getId(),
                 task.getName(),
                 task.getDescription(),

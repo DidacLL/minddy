@@ -8,7 +8,7 @@ import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dao.Task;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.dto.TaskDTO;
-import cat.itacademy.minddy.data.dto.views.TaskExpanded;
+import cat.itacademy.minddy.data.dto.views.TaskData;
 import cat.itacademy.minddy.data.dto.views.TaskMinimal;
 import cat.itacademy.minddy.repositories.TaskRepository;
 import cat.itacademy.minddy.services.TagService;
@@ -62,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<TaskExpanded> getProjectExpandedTasks(HierarchicalId projectId, int pageSize, int page, TaskState... notIn) {
+    public Page<TaskData> getProjectExpandedTasks(HierarchicalId projectId, int pageSize, int page, TaskState... notIn) {
         if (notIn == null || notIn.length == 0) return repo.getProjectExpandedTasks(projectId.getUserId(),
                 projectId.toString(),
                 PageRequest.of(page, pageSize));
@@ -71,6 +71,20 @@ public class TaskServiceImpl implements TaskService {
                 PageRequest.of(page, pageSize),
                 notIn[0]);
         return repo.getProjectExpandedTasks(projectId.getUserId(),
+                projectId.toString(),
+                PageRequest.of(page, pageSize),
+                notIn);
+    }
+ @Override
+    public Page<TaskData> getProjectExpandedTasksExclusive(HierarchicalId projectId, int pageSize, int page, TaskState... notIn) {
+        if (notIn == null || notIn.length == 0) return repo.getProjectExpandedTasksExclusive(projectId.getUserId(),
+                projectId.toString(),
+                PageRequest.of(page, pageSize));
+        if (notIn.length == 1) return repo.getProjectExpandedTasksExclusive(projectId.getUserId(),
+                projectId.toString(),
+                PageRequest.of(page, pageSize),
+                notIn[0]);
+        return repo.getProjectExpandedTasksExclusive(projectId.getUserId(),
                 projectId.toString(),
                 PageRequest.of(page, pageSize),
                 notIn);
@@ -96,7 +110,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskExpanded getExpandedTask(String userId, UUID taskId) throws MinddyException {
+    public TaskData getExpandedTask(String userId, UUID taskId) throws MinddyException {
         return repo.getExpandedTask(userId, taskId).orElseThrow(() -> new MinddyException(404, "task " + taskId + " not found"));
     }
 
@@ -122,7 +136,8 @@ public class TaskServiceImpl implements TaskService {
             oldTags.addAll(Arrays.stream(tags).map((x) -> Tag.fromDTO(x, holderID.getUserId())).toList());
         //CHECK Date
         if (dto.getDate() != null && !dto.getDate().equals(old.getDate())) {
-            if (dto.getDate().isAfter(old.getDate())) oldTags.add(Tag.fromDTO(tagService.getTag(holderID.getUserId(), DefaultTags.DELAYED.getTagName())));
+            if (dto.getDate().isAfter(old.getDate()))
+                oldTags.add(Tag.fromDTO(tagService.getTag(holderID.getUserId(), DefaultTags.DELAYED.getTagName())));
             old.setDate(dto.getDate());
         }
         return TaskDTO.fromEntity(repo.save(old.setTags(oldTags.stream().toList())));
@@ -151,6 +166,24 @@ public class TaskServiceImpl implements TaskService {
             return repo.countProjectTasks(projectId.getUserId(), projectId.toString());
         if (notIn.length == 1) return repo.countProjectTasks(projectId.getUserId(), projectId.toString(), notIn[0]);
         return repo.countProjectTasks(projectId.getUserId(), projectId.toString(), notIn);
+    }
+
+    @Override
+    public List<TaskMinimal> getMissedTasks(String userId, LocalDate today) {
+        var taskList = repo.getMissedTasks(userId, today);
+        var res = new ArrayList<TaskMinimal>();
+        for (var t : taskList) {
+
+            if(t.getState() != TaskState.DEFERRED) {
+                try {
+                    updateTask(new HierarchicalId(userId,t.getHolder()), new TaskDTO().setState(TaskState.DEFERRED));
+                } catch (MinddyException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            res.add(new TaskMinimal(t.getId(),t.getName(),t.getDate(),t.getHolder(),t.getHolderName()));
+        }
+        return res;
     }
 
 
