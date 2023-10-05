@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS minddy_test;
+CREATE DATABASE minddy_test;

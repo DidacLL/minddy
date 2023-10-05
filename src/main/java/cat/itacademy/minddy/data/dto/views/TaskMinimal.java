@@ -11,21 +11,13 @@ import java.util.UUID;
 @Getter
 public class TaskMinimal {
     private UUID id;
-    private String name;
-    private LocalDate date;
-    private String holder;
-    private String holderName;
 
     public static TaskMinimal fromEntity(Task task){
-        return new TaskMinimal(task.getId(),task.getName(),task.getDate(),task.getHolder().getId().toString(),task.getHolder().getName());
+        return new TaskMinimal(task.getId());
 
     }
-    public static TaskMinimal fromTuple(Object[] tuple){
-        UUID id = UUID.fromString((String) tuple[0]);
-        LocalDate retDate = ((Date) tuple[1]).toLocalDate();
-        String name = (String) tuple[2];
-        String holder = (String) tuple[3];
-        String holderName = (String) tuple[4];
-       return new TaskMinimal(id, name,retDate, holder,  holderName);
+    public static TaskMinimal fromTuple(String tuple){
+
+       return new TaskMinimal(UUID.fromString(tuple));
     }
 }

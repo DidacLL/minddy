@@ -21,15 +21,15 @@ public interface NoteService {
 
     Page<NoteMinimal> getAllVisibleNotes(HierarchicalId projectId,int page,int pageSize) throws MinddyException;
     List<NoteDTO> getSystemNotes(HierarchicalId projectId) throws MinddyException;
-    List<NoteDTO> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException;
+    List<NoteMinimal> getTaskNotes(HierarchicalId projectId, String taskId) throws MinddyException;
 
     NoteDTO getNote(HierarchicalId projectId, UUID noteId) throws MinddyException;
     NoteFullView getFullNote(HierarchicalId projectId, UUID noteId) throws MinddyException;
+    NoteFullView getFullNote(String user,UUID noteId) throws MinddyException;
 
     Page<NoteMinimal> searchNotesByTag(HierarchicalId projectId, int page, int pageSize, String[] tagNames, NoteType... types)throws MinddyException;
     Page<NoteMinimal> searchNotesByName(HierarchicalId projectId,int page,int pageSize,String name, NoteType... types)throws MinddyException;
     Page<NoteMinimal> searchNotesByContent(HierarchicalId projectId,int page,int pageSize,String text, NoteType... types)throws MinddyException;
-
 
 
 }

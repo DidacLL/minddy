@@ -20,11 +20,7 @@ import java.util.UUID;
 public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
     @Query(value = """
                     SELECT NEW cat.itacademy.minddy.data.dto.views.TaskMinimal(
-                        t.id,
-                        t.name,
-                        t.date,
-                        CONCAT(t.holder.id.holderId,t.holder.id.ownId),
-                        t.holder.name
+                        t.id
                     )
                     FROM Task t
                     WHERE t.holder.id.userId= :userId
@@ -36,11 +32,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
     Page<TaskMinimal> getProjectMinimalTasks(String userId, String projectId, Pageable pageable, TaskState... notIn);
     @Query(value = """
                     SELECT NEW cat.itacademy.minddy.data.dto.views.TaskMinimal(
-                        t.id,
-                        t.name,
-                        t.date,
-                        CONCAT(t.holder.id.holderId,t.holder.id.ownId),
-                        t.holder.name
+                        t.id
                     )
                     FROM Task t
                     WHERE t.holder.id.userId= :userId
@@ -52,12 +44,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
     Page<TaskMinimal> getProjectMinimalTasks(String userId, String projectId, Pageable pageable, TaskState notIn);
     @Query(value = """
                     SELECT NEW cat.itacademy.minddy.data.dto.views.TaskMinimal(
-                        t.id,
-                        t.name,
-                        t.date,
-                        CONCAT(t.holder.id.holderId,t.holder.id.ownId),
-                        t.holder.name
-                    )
+                        t.id)
                     FROM Task t
                     WHERE t.holder.id.userId= :userId
                      AND ( t.holder.id.holderId LIKE CONCAT(:projectId, '%')
@@ -68,13 +55,13 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
     Page<TaskMinimal> getProjectMinimalTasks(String userId, String projectId, Pageable pageable);
     @Query(value = """
                 SELECT
-                t.id , t.name , t.date , CONCAT(p.holder_id,p.own_id) ,p.name
+                t.id
                 FROM tasks t
                 JOIN projects p ON t.parent_id = p.holder_id AND t.holder_id = p.own_id AND t.user = p.user_id
                 WHERE t.user = :userId
                 AND t.state<=3 AND t.date <= ADDDATE(:date, INTERVAL t.priority DAY)
             """, nativeQuery = true)
-    Page<Object[]> getTodayTasksNative(String userId, LocalDate date, Pageable pageable);
+    Page<String> getTodayTasksNative(String userId, LocalDate date, Pageable pageable);
     @Query(value = """
             SELECT NEW cat.itacademy.minddy.data.dto.views.TaskData(
                 t.id,
@@ -83,8 +70,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                 t.date,
                 CONCAT( t.holder.id.holderId,t.holder.id.ownId),
                 t.state,
-                t.priority,
-                t.holder.name
+                t.priority
             )
             FROM Task t
             WHERE t.holder.id.userId= :userId
@@ -101,8 +87,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                 t.date,
                 CONCAT( t.holder.id.holderId,t.holder.id.ownId),
                 t.state,
-                t.priority,
-                t.holder.name
+                t.priority
             )
             FROM Task t
             WHERE t.holder.id.userId= :userId
@@ -119,8 +104,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                 t.date,
                 CONCAT( t.holder.id.holderId,t.holder.id.ownId),
                 t.state,
-                t.priority,
-                t.holder.name
+                t.priority
             )
             FROM Task t
             WHERE t.holder.id.userId= :userId
@@ -138,8 +122,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                 t.date,
                 CONCAT( t.holder.id.holderId,t.holder.id.ownId),
                 t.state,
-                t.priority,
-                t.holder.name
+                t.priority
             )
             FROM Task t
             WHERE t.holder.id.userId= :userId
@@ -155,8 +138,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                 t.date,
                 CONCAT( t.holder.id.holderId,t.holder.id.ownId),
                 t.state,
-                t.priority,
-                t.holder.name
+                t.priority
             )
             FROM Task t
             WHERE t.holder.id.userId= :userId
@@ -165,7 +147,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
     Page<TaskData> getProjectExpandedTasksExclusive(String userId, String projectId, Pageable pageable);
 
     @Query(value = """
-                SELECT NEW cat.itacademy.minddy.data.dto.views.TaskMinimal(t.id,t.name,t.date,CONCAT(t.holder.id.holderId, t.holder.id.ownId),t.holder.name)
+                SELECT NEW cat.itacademy.minddy.data.dto.views.TaskMinimal(t.id)
                     FROM Task t
                     WHERE t.holder.id.userId = :userId AND t.id=:taskId
             """)
@@ -178,8 +160,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                     t.date,
                     CONCAT( t.holder.id.holderId,t.holder.id.ownId),
                     t.state,
-                    t.priority,
-                    t.holder.name)
+                    t.priority)
                     FROM Task t
                     WHERE t.holder.id.userId = :userId AND t.id=:taskId
             """)
@@ -234,8 +215,7 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                     t.date,
                     CONCAT( t.holder.id.holderId,t.holder.id.ownId),
                     t.state,
-                    t.priority,
-                    t.holder.name)
+                    t.priority)
             FROM Task t
             WHERE t.holder.id.userId= :userId
                 AND t.date < :today

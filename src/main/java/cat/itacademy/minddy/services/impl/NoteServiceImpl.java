@@ -115,7 +115,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteDTO> getTaskNotes(HierarchicalId projectId, String taskId) {
+    public List<NoteMinimal> getTaskNotes(HierarchicalId projectId, String taskId) {
         return repo.searchByNameAndTag(
                 projectId.getUserId(),
                 taskId,
@@ -132,6 +132,17 @@ public class NoteServiceImpl implements NoteService {
                 String.valueOf(noteId)).orElseThrow(() -> new MinddyException(404, "Note " + noteId + " user:" + projectId.getUserId() + " not found"))));
     }
 
+
+    @Override
+    public NoteFullView getFullNote(String user, UUID noteId) throws MinddyException {
+        List<TagDTO> noteTags = repo.getNoteTags(user, noteId);
+        return new NoteFullView(
+                NoteDTO.fromEntity(repo.getNote(user,
+                        String.valueOf(noteId)
+                ).orElseThrow(() -> new MinddyException(404, "Note not found"))),
+                noteTags
+        );
+    }
     @Override
     public NoteFullView getFullNote(HierarchicalId projectId, UUID noteId) throws MinddyException {
         List<TagDTO> noteTags = repo.getNoteTags(projectId.getUserId(), noteId);

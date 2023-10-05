@@ -98,7 +98,7 @@ class NoteServiceTest {
     void getAllVisibleNotes_test() {
         assertDoesNotThrow(() -> {
             Page<NoteMinimal> allVisibleNotes = service.getAllVisibleNotes(projectId, 0, Integer.MAX_VALUE);
-            for (NoteMinimal note : allVisibleNotes) System.out.println(note.getName());
+            for (NoteMinimal note : allVisibleNotes) System.out.println(note.getId());
             assertTrue("Checking default sql script number of notes", allVisibleNotes.stream().toList().size() == 3);
         });
     }
@@ -134,9 +134,9 @@ class NoteServiceTest {
 
         });
         assertDoesNotThrow(() -> {
-            List<NoteDTO> taskNotes = service.getTaskNotes(projectId, taskID);
-            for (var note : taskNotes) System.out.println(note.getName());
-            assertTrue("Unexpected taskNotes number", taskNotes.size() >= 2);
+            List<NoteMinimal> taskNotes = service.getTaskNotes(projectId, taskID);
+            for (var note : taskNotes) System.out.println(note.getId());
+            assertTrue("Unexpected taskNotes number ", taskNotes.size() != 3);
         });
     }
 

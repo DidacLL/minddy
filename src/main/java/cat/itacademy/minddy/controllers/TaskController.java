@@ -1,6 +1,7 @@
 package cat.itacademy.minddy.controllers;
 
 import cat.itacademy.minddy.data.dto.views.ProjectData;
+import cat.itacademy.minddy.data.dto.views.TaskData;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,7 +22,7 @@ public interface TaskController {
 
     ResponseEntity<?> getTaskTags(String id);
 
-    ResponseEntity<?> updateProject(Authentication auth, ProjectData projectData);
+    ResponseEntity<?> updateTask(Authentication auth, TaskData taskData);
 
-    ResponseEntity<?> updateProject(ProjectData projectData);
+    ResponseEntity<?> updateTask(TaskData taskData);
 }

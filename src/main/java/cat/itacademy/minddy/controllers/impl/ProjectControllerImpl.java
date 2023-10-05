@@ -77,14 +77,27 @@ public class ProjectControllerImpl implements ProjectController {
     @GetMapping("/tag")
 
     public ResponseEntity<?> getProjectTags(Authentication auth, @RequestParam String id) {
-        return ResponseEntity.ok(tagService.getProjectTags(new HierarchicalId(auth.getName(), id), true));
+        try {
+
+            return ResponseEntity.ok(tagService.getProjectTags(new HierarchicalId(auth.getName(), id), true));
+        } catch (Exception e) {
+            System.out.println("ERRRRR! " + e);
+            return ResponseEntity.badRequest().body(e);
+        }
     }
 
     @Override
-    @GetMapping("demo/tag")
+    @GetMapping("/demo/tag")
 
     public ResponseEntity<?> getProjectTags(@RequestParam String id) {
+            try {
+
         return ResponseEntity.ok(tagService.getProjectTags(new HierarchicalId(DEMO_ID, id), true));
+
+            } catch (Exception e) {
+                System.out.println("ERRRRR! " + e);
+                return ResponseEntity.badRequest().body(e);
+            }
     }
 
     @Override

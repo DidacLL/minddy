@@ -36,7 +36,7 @@ class TaskServiceTest {
         assertDoesNotThrow(() -> {
             var res = taskService.getAllProjectMinTasks(projectId).stream().toList();
             System.out.println(res.size());
-            for (var tm : res) System.out.println(tm.getName());
+//            for (var tm : res) System.out.println(tm.getName());
             assertTrue(res.size() >= 5);
         });
 
@@ -49,8 +49,8 @@ class TaskServiceTest {
             var res = taskService.getAllProjectMinTasks(projectId, TaskState.DISCARDED).stream().toList();
             System.out.println(res.size());
             for (var tm : res) {
-                System.out.println(tm.getName());
-                assertFalse(tm.getName().equalsIgnoreCase("Test Discarded"));
+//                System.out.println(tm.getName());
+                assertFalse(taskService.getExpandedTask(projectId.getUserId(), tm.getId()).getName().equalsIgnoreCase("Test Discarded"));
             }
         });
 
@@ -62,7 +62,6 @@ class TaskServiceTest {
         assertDoesNotThrow(() -> {
             var res = taskService.getAllProjectMinTasks(projectId, TaskState.TODO, TaskState.DONE, TaskState.DEFERRED, TaskState.ON_PROGRESS, TaskState.REVIEW).stream().toList();
             System.out.println(res.size());
-            for (var tm : res) System.out.println(tm.getName());
             assertEquals(1, res.size());
         });
 
@@ -106,7 +105,7 @@ class TaskServiceTest {
 
     @Test
     void getMinimalTask_test() {
-        assertDoesNotThrow(() -> System.out.println(taskService.getMinimalTask(projectId.getUserId(), taskID).getName()));
+        assertDoesNotThrow(() -> System.out.println(taskService.getMinimalTask(projectId.getUserId(), taskID).getId()));
     }
 
     @Test
@@ -216,8 +215,7 @@ class TaskServiceTest {
         assertDoesNotThrow(() -> {
             var res = taskService.getTodayTasks(projectId.getUserId(), LocalDate.now().minusDays(1), Integer.MAX_VALUE, 0);
             for (var el:res) {
-                System.out.println(el.getName()+": "+el.getDate() );
-                assertFalse(el.getName().equalsIgnoreCase("NOT TODAY"));
+                assertFalse(taskService.getExpandedTask(projectId.getUserId(), el.getId()).getName().equalsIgnoreCase("NOT TODAY"));
             }
         });
     }

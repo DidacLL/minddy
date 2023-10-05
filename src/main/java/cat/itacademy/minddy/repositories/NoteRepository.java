@@ -26,22 +26,24 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     AND n.id= :noteId
 """)
     Optional<Note> getNote(String userId,String parentId,String holderId, String noteId);
+
+    @Query(nativeQuery = true,value = """
+    SELECT  * FROM notes n WHERE n.user= :userId
+    AND n.id= :noteId
+""")
+    Optional<Note> getNote(String userId, String noteId);
+
     @Query("SELECT new cat.itacademy.minddy.data.dto.TagDTO(t.id.name, t.isVisible, t.isHeritable) FROM Note n JOIN n.tags t WHERE n.holder.id.userId = :userId AND n.id = :noteId")
     List<TagDTO> getNoteTags(String userId,UUID noteId);
     @Query(
             value = """
-            SELECT NEW cat.itacademy.minddy.data.dto.NoteDTO(
-                n.id,
-                n.name,
-                n.body,
-                n.type,
-                n.isVisible)
-                   
-            FROM Note n WHERE n.holder.id.userId=:userId AND n.name LIKE :name AND
+            SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(
+                n.id)                   
+            FROM Note n WHERE n.holder.id.userId=:userId AND n.name LIKE :name AND n.isVisible AND 
             :tags IN (SELECT t.id.name FROM n.tags t)
             """
     )
-    List<NoteDTO> searchByNameAndTag(@Param(value = "userId") String userId, @Param(value = "name")String name, @Param(value = "tags") String tags);
+    List<NoteMinimal> searchByNameAndTag(@Param(value = "userId") String userId, @Param(value = "name")String name, @Param(value = "tags") String tags);
 
     @Query(nativeQuery = true,
             value = """
@@ -59,7 +61,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     List<NoteDTO> searchByNameAndTags(@Param(value = "userId") String userId,@Param(value = "name")String name, @Param(value = "tags")List<String> tags);
 
     @Query(value = """
-    SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id,n.name) FROM Note n
+    SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id) FROM Note n
     WHERE n.holder.id=:projectId AND n.isVisible=:visible
 """)
     Page<NoteMinimal> getNotesByHolder(HierarchicalId projectId, Pageable pageable, boolean visible);
@@ -76,7 +78,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
 
 @Query("""
 
-        SELECT new cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id, n.name)
+        SELECT new cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id)
         FROM Note n JOIN n.tags t
          WHERE n.holder.id.userId = :userId AND t.id.name IN :tagNames AND n.isVisible = true
          AND n.type IN :types
@@ -88,7 +90,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     Page<NoteMinimal> searchByTagAndType(String userId, String parentId, String holderId, Pageable pageRequest, String[] tagNames, NoteType...types);
 
     @Query(value = """
-    SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id,n.name)  FROM Note n
+    SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id)  FROM Note n
     WHERE n.holder.id.userId=:userId AND n.isVisible AND n.type IN :types AND(
         (n.holder.id.holderId=:parentId AND n.holder.id.ownId=:holderId)
         OR (n.holder.id.holderId LIKE CONCAT(:parentId,:holderId,'%'))
@@ -98,7 +100,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     Page<NoteMinimal> searchByNameAndType(String userId, String parentId, String holderId, Pageable pageable, String name, NoteType... types);
 
     @Query(value = """
-     SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id,n.name)  FROM Note n
+     SELECT NEW cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id)  FROM Note n
     WHERE n.holder.id.userId=:userId AND n.isVisible AND n.type IN :types AND(
         (n.holder.id.holderId=:parentId AND n.holder.id.ownId=:holderId)
         OR (n.holder.id.holderId LIKE CONCAT(:parentId,:holderId,'%'))

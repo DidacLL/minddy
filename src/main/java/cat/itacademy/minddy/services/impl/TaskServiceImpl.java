@@ -57,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Page<TaskMinimal> getTodayTasks(String userID, LocalDate date, int pageSize, int page) {
         Date date1 = Date.valueOf(date);
-        System.out.println(date1);
+//        System.out.println(date1);
         return repo.getTodayTasksNative(userID, date, PageRequest.of(page, pageSize)).map(TaskMinimal::fromTuple);
     }
 
@@ -181,7 +181,7 @@ public class TaskServiceImpl implements TaskService {
                     throw new RuntimeException(e);
                 }
             }
-            res.add(new TaskMinimal(t.getId(),t.getName(),t.getDate(),t.getHolder(),t.getHolderName()));
+            res.add(new TaskMinimal(t.getId()));
         }
         return res;
     }
