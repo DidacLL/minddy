@@ -45,6 +45,7 @@ public class Project implements Notable, Taggable<Project> {
 //    @Column(columnDefinition = "JSON")
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<ProjectTracker> trackers;
+    @Column(columnDefinition = "TEXT")
     private String uiConfig = "";
     @Embedded
     @Column

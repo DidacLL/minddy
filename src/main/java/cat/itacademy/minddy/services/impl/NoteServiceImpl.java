@@ -9,8 +9,8 @@ import cat.itacademy.minddy.data.dao.Project;
 import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
-import cat.itacademy.minddy.data.dto.views.NoteFullView;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
+import cat.itacademy.minddy.data.dto.views.NoteRequest;
 import cat.itacademy.minddy.repositories.NoteRepository;
 import cat.itacademy.minddy.services.NoteService;
 import cat.itacademy.minddy.services.TagService;
@@ -45,7 +45,7 @@ public class NoteServiceImpl implements NoteService {
                     )
             ));
         } catch (Exception e) {
-            throw new MinddyException(400, "Validation failed");
+            throw new MinddyException(400, "Validation failed:" + e.getMessage());
         }
     }
 
@@ -134,25 +134,32 @@ public class NoteServiceImpl implements NoteService {
 
 
     @Override
-    public NoteFullView getFullNote(String user, UUID noteId) throws MinddyException {
+    public NoteRequest getFullNote(String user, UUID noteId) throws MinddyException {
         List<TagDTO> noteTags = repo.getNoteTags(user, noteId);
-        return new NoteFullView(
+        Project project = repo.getNoteHolder(user, noteId).orElseThrow(()->new MinddyException(404, "Note " + noteId + " holder not found"));
+
+        return new NoteRequest(
                 NoteDTO.fromEntity(repo.getNote(user,
                         String.valueOf(noteId)
                 ).orElseThrow(() -> new MinddyException(404, "Note not found"))),
-                noteTags
+                project.getId().toString(),
+                noteTags.stream().map(TagDTO::getName).toArray(String[]::new)
         );
     }
     @Override
-    public NoteFullView getFullNote(HierarchicalId projectId, UUID noteId) throws MinddyException {
+    public NoteRequest getFullNote(HierarchicalId projectId, UUID noteId) throws MinddyException {
         List<TagDTO> noteTags = repo.getNoteTags(projectId.getUserId(), noteId);
-        return new NoteFullView(
+        Project project = repo.getNoteHolder(projectId.getUserId(), noteId).orElseThrow(()->new MinddyException(404, "Note " + noteId + " holder not found"));
+        return new NoteRequest(
+
                 NoteDTO.fromEntity(repo.getNote(projectId.getUserId(),
                         projectId.getHolderId(),
                         projectId.getOwnId(),
                         String.valueOf(noteId)
                 ).orElseThrow(() -> new MinddyException(404, "Note not found"))),
-                noteTags
+                project.getId().toString()
+                ,
+                noteTags.stream().map(TagDTO::getName).toArray(String[]::new)
         );
     }
 
@@ -170,6 +177,13 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public Page<NoteMinimal> searchNotesByContent(HierarchicalId projectId, int page, int pageSize, String text, NoteType... types) {
         return repo.searchByBodyAndType(projectId.getUserId(), projectId.getHolderId(), projectId.getOwnId(), PageRequest.of(page, pageSize), text, types==null||types.length==0?NoteType.values():types);
+    }
+
+    @Override
+    public List<NoteMinimal> getProjectPinnedNotes(HierarchicalId hierarchicalId) throws MinddyException {
+        List<NoteMinimal> notes = repo.searchByHolderAndTags(hierarchicalId, DefaultTags.PINNED.getTagName());
+        if(notes.isEmpty())throw new MinddyException(404, "Not pinned notes");
+        return notes;
     }
 
 

@@ -32,4 +32,5 @@ public interface TagService {
 
     boolean deleteTag(String userId, TagDTO tag) throws MinddyException;
 
+    List<TagDTO> getAllTags(String userId);
 }

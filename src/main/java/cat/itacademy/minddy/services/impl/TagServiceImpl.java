@@ -103,6 +103,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public List<TagDTO> getAllTags(String userId) {
+        return repo.getAllUserTags(userId);
+    }
+
+    @Override
     public List<String> searchTagsLike(String userId, String nameLike) {
         return repo.getTagsLike(userId, nameLike);
     }

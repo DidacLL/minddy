@@ -2,6 +2,7 @@ package cat.itacademy.minddy.repositories;
 
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.TaskState;
+import cat.itacademy.minddy.data.dao.Project;
 import cat.itacademy.minddy.data.dao.Task;
 import cat.itacademy.minddy.data.dto.views.TaskData;
 import cat.itacademy.minddy.data.dto.views.TaskMinimal;
@@ -18,6 +19,10 @@ import java.util.UUID;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
+    @Query(value = """
+    SELECT t.holder FROM Task t WHERE t.id=:taskId AND  t.holder.id.userId=:userId
+""")
+    Optional<Project> getTaskHolder(String userId, UUID taskId);
     @Query(value = """
                     SELECT NEW cat.itacademy.minddy.data.dto.views.TaskMinimal(
                         t.id
@@ -159,8 +164,9 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                     t.description,
                     t.date,
                     CONCAT( t.holder.id.holderId,t.holder.id.ownId),
-                    t.state,
-                    t.priority)
+                    t.state ,
+                    t.priority 
+                    )
                     FROM Task t
                     WHERE t.holder.id.userId = :userId AND t.id=:taskId
             """)
@@ -172,6 +178,8 @@ public interface TaskRepository extends JpaRepository<Task, HierarchicalId> {
                 WHERE t.holder.id.userId= :userId AND t.id=:taskId
             """)
     Optional<Task> getTask(String userId, UUID taskId);
+
+    Optional<Task> findByIdAndHolderIdUserId(UUID id,String userId);
 
     @Query(nativeQuery = true, value = """
             SELECT COUNT(*) FROM tasks t WHERE user=:userId AND t.state NOT IN :notIn""")

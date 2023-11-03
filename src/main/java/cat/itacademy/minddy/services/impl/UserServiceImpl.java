@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
         tagService.createTag(userId,DefaultTags.FAVOURITE.toDTO());
         var rootTag= tagService.createTag(userId,DefaultTags.ROOT.toDTO());
         tagService.createTag(userId,DefaultTags.TASK_NOTE.toDTO());
+        tagService.createTag(userId,DefaultTags.PINNED.toDTO());
         projectService.createRootProject(userId,"",userName,rootTag);
 //        ArrayList<String> fav=new ArrayList<String>();
         createUser(new UserDTO(

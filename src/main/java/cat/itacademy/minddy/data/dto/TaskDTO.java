@@ -4,6 +4,7 @@ import cat.itacademy.minddy.data.config.Priority;
 import cat.itacademy.minddy.data.config.RepeatMode;
 import cat.itacademy.minddy.data.config.TaskState;
 import cat.itacademy.minddy.data.dao.Task;
+import cat.itacademy.minddy.data.dto.views.TaskData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,14 +24,26 @@ public class TaskDTO {
     private RepeatMode repetition=null;
     private Priority priority=Priority.NORMAL;
     private int repeatValue=0;
-//    private HierarchicalId holderID;
+    private String holderID;
 
-    public TaskDTO( String name, String description, TaskState state, LocalDate date, Priority priority) {
+    public TaskDTO( String name, String description, TaskState state, LocalDate date, Priority priority,String holderID) {
         this.name = name;
         this.description = description;
         this.state = state;
         this.date = date;
         this.priority = priority;
+        this.holderID=holderID;
+    }
+
+    public static TaskDTO fromData(TaskData taskData) {
+        return new TaskDTO(
+                taskData.getName(),
+                taskData.getDescription(),
+                TaskState.parse(taskData.getState()),
+                taskData.getDate(),
+                Priority.parse(taskData.getPriority()),
+                taskData.getHolder()
+        ).setId(taskData.getId());
     }
 
     public boolean isFulfilled(){

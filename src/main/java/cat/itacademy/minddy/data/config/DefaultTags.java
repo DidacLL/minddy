@@ -8,6 +8,7 @@ public enum DefaultTags {
     DELAYED(false,false,"_DELAYED_"),
     ROOT(false,false,"_ROOT_"),
     FAVOURITE(false,false,"_FAV_"),
+    PINNED(false,false,"_PIN_"),
     TASK_NOTE(false,false,"_TASK_");
     //TODO Default tags config
 

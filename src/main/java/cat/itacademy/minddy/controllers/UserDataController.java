@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
 
@@ -34,6 +35,13 @@ public interface UserDataController {
     @Tag(name = "New user",
             description = "Creates new user if it doesn't exists yet, otherwise return exception")
      ResponseEntity<?> registerNewUser(Authentication auth,String uiConfig);
+
+    @GetMapping(value = "/tags")
+    ResponseEntity<?> getUserTags(Authentication auth);
+
+    @GetMapping(value = "/demo/tags")
+    ResponseEntity<?> getUserTags();
+
     @Tag(name = "Update user configuration",
             description = "Updates user UI configuration from existing user")
      ResponseEntity<?> updateUserConfig(Authentication auth, String uiConfig);

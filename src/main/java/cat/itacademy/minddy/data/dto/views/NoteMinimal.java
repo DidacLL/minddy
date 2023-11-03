@@ -14,7 +14,6 @@ import java.util.UUID;
 @Getter @Setter
 public class NoteMinimal {
     private UUID id;
-
     public static NoteMinimal fromEntity(Note entity){
         return new NoteMinimal().setId(entity.getId());
     }

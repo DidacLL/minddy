@@ -2,6 +2,7 @@ package cat.itacademy.minddy.repositories;
 
 import cat.itacademy.minddy.data.config.TagId;
 import cat.itacademy.minddy.data.dao.Tag;
+import cat.itacademy.minddy.data.dto.TagDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -70,4 +71,11 @@ public interface TagRepository extends JpaRepository<Tag, TagId> {
                 )
             """)
     int countTagUses(String userId, String tagName);
+
+
+    @Query(value = """
+    SELECT new cat.itacademy.minddy.data.dto.TagDTO(t.id.name, t.isHeritable,t.isVisible) FROM Tag t
+    WHERE t.id.userId =:userId AND  t.isVisible=true
+""")
+    List<TagDTO> getAllUserTags(String userId);
 }

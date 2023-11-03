@@ -41,10 +41,22 @@ public class ProjectDTO {
         return new ProjectDTO().setId(new HierarchicalId(userId,data.getOwnerID(),data.getProjectID()))
                 .setName(data.getProjectName())
                 .setDescription(data.getDescription())
-                .setState(data.getState())
-                .setDeadLine(data.getDeadLine())
+                .setState(ProjectState.parse(data.getState()))
+                .parseDeadline(data.getDeadline())
                 .setUiConfig(data.getUiConfig());
     }
 
-
+    public ProjectDTO parseDeadline(String date){
+        LocalDate resVal;
+        try{
+            this.deadLine= LocalDate.parse(date);
+        }catch (Exception e){
+            System.out.println("ERR cannot parse date: " + date);
+        }
+        return this;
+    }
+    public ProjectDTO parseDeadline(LocalDate... date){
+        if(date != null) setDeadLine(date[0]);
+        return this;
+    }
 }

@@ -5,6 +5,7 @@ import cat.itacademy.minddy.data.html.ProjectStructure;
 import cat.itacademy.minddy.data.html.TodayReport;
 import cat.itacademy.minddy.data.html.requests.SearchRequest;
 import cat.itacademy.minddy.services.ProjectService;
+import cat.itacademy.minddy.services.TagService;
 import cat.itacademy.minddy.services.TaskService;
 import cat.itacademy.minddy.services.UserService;
 import cat.itacademy.minddy.utils.MinddyException;
@@ -31,6 +32,8 @@ public class UserDataControllerImpl implements UserDataController {
     ProjectService projectService;
     @Autowired
     TaskService taskService;
+    @Autowired
+    TagService tagService;
     @GetMapping("/ping")
     public String ping(Authentication auth) {
         return auth.getName();
@@ -116,7 +119,7 @@ public class UserDataControllerImpl implements UserDataController {
 
     @Override
     @PostMapping(value = "/new")
-    public ResponseEntity<?> registerNewUser(Authentication auth, String uiConfig) {
+    public ResponseEntity<?> registerNewUser(Authentication auth, @RequestBody String uiConfig) {
         String name = ((OAuth2User) auth.getPrincipal()).getName();
         try {
             return ResponseEntity.ok(userService.registerNewUser(auth.getName(), name, uiConfig));
@@ -126,15 +129,27 @@ public class UserDataControllerImpl implements UserDataController {
     }
 
     @Override
+    @GetMapping(value = "/tags")
+    public ResponseEntity<?> getUserTags(Authentication auth) {
+            return ResponseEntity.ok(tagService.getAllTags(auth.getName()));
+    }
+
+    @Override
+    @GetMapping(value = "/demo/tags")
+    public ResponseEntity<?> getUserTags() {
+            return ResponseEntity.ok(tagService.getAllTags(DEMO_ID));
+    }
+
+    @Override
     @PostMapping(value = "/update")
-    public ResponseEntity<?> updateUserConfig(Authentication auth, String uiConfig) {
+    public ResponseEntity<?> updateUserConfig(Authentication auth, @RequestBody String uiConfig) {
             String name = auth.getName();
         return updateUserConfigMain(uiConfig, name);
     }
 
     @Override
     @PostMapping(value = "/demo/update")
-    public ResponseEntity<?> updateUserConfig(String uiConfig) {
+    public ResponseEntity<?> updateUserConfig(@RequestBody String uiConfig) {
         return updateUserConfigMain(uiConfig, DEMO_ID);
     }
 

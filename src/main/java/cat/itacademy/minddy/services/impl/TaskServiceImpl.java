@@ -6,6 +6,7 @@ import cat.itacademy.minddy.data.config.TaskState;
 import cat.itacademy.minddy.data.dao.Project;
 import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dao.Task;
+import cat.itacademy.minddy.data.dto.ProjectDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.dto.TaskDTO;
 import cat.itacademy.minddy.data.dto.views.TaskData;
@@ -116,12 +117,16 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDTO getTask(String userId, UUID taskId) throws MinddyException {
-        return TaskDTO.fromEntity(repo.getTask(userId, taskId).orElseThrow(() -> new MinddyException(404, "task " + taskId + " not found")));
+        return TaskDTO.fromEntity(repo.findByIdAndHolderIdUserId( taskId,userId).orElseThrow(() -> new MinddyException(404, "task " + taskId + " not found")));
     }
 
     @Override
     public TaskDTO updateTask(HierarchicalId holderID, TaskDTO dto, TagDTO... tags) throws MinddyException {
-        var old = repo.getTask(holderID.getUserId(), dto.getId()).orElseThrow(() -> new MinddyException(404, "task " + holderID + " not found"));
+        System.out.println(dto.getName());
+        System.out.println(dto.getId());
+        System.out.println(holderID.getUserId());
+        System.out.println(holderID);
+        var old = repo.findByIdAndHolderIdUserId(dto.getId(),holderID.getUserId()).orElseThrow(() -> new MinddyException(404, "task " + holderID +"/"+dto.getId()+ " not found (TaskService.125)"));
         Set<Tag> oldTags = new HashSet<>(tagService.getTaskTags(holderID.getUserId(), old.getId(), true).stream().map((x) -> Tag.fromDTO(x, holderID.getUserId())).toList());
         oldTags.addAll(tagService.getTaskTags(holderID.getUserId(), old.getId(), false).stream().map((x) -> Tag.fromDTO(x, holderID.getUserId())).toList());
         //CHECK NAME
@@ -140,7 +145,12 @@ public class TaskServiceImpl implements TaskService {
                 oldTags.add(Tag.fromDTO(tagService.getTag(holderID.getUserId(), DefaultTags.DELAYED.getTagName())));
             old.setDate(dto.getDate());
         }
-        return TaskDTO.fromEntity(repo.save(old.setTags(oldTags.stream().toList())));
+
+        List<Tag> tagList = oldTags.stream().toList();
+        System.out.println("tag list: " + tagList.size());
+//        Task entity = old.setTags(tagList);
+        Task save = repo.save(old);
+        return TaskDTO.fromEntity(save);
     }
 
     @Override
@@ -174,7 +184,7 @@ public class TaskServiceImpl implements TaskService {
         var res = new ArrayList<TaskMinimal>();
         for (var t : taskList) {
 
-            if(t.getState() != TaskState.DEFERRED) {
+            if(TaskState.parse(t.getState()) != TaskState.DEFERRED) {
                 try {
                     updateTask(new HierarchicalId(userId,t.getHolder()), new TaskDTO().setState(TaskState.DEFERRED));
                 } catch (MinddyException e) {
@@ -184,6 +194,11 @@ public class TaskServiceImpl implements TaskService {
             res.add(new TaskMinimal(t.getId()));
         }
         return res;
+    }
+    @Override
+    public String getTaskHolder(String userId, String taskId) throws MinddyException {
+        ProjectDTO project= ProjectDTO.fromEntity(repo.getTaskHolder(userId, UUID.fromString(taskId)).orElseThrow(()->new MinddyException(404,"Holder of Task: " + taskId+" NOT FOUND")));
+        return project.getId().toString();
     }
 
 

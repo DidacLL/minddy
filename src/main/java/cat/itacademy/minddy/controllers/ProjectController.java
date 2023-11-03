@@ -1,7 +1,6 @@
 package cat.itacademy.minddy.controllers;
 
-import cat.itacademy.minddy.data.dto.TagDTO;
-import cat.itacademy.minddy.data.dto.views.ProjectData;
+import cat.itacademy.minddy.data.dto.views.ProjectRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -37,13 +36,13 @@ public interface ProjectController {
     @GetMapping("/demo/tasks")
     ResponseEntity<?> getProjectTasks(@RequestParam String id, @RequestParam int size, @RequestParam int page, @RequestParam(name = "viewall") boolean viewAll, @RequestParam boolean subproject);
 
-    ResponseEntity<?> updateProject(Authentication auth, ProjectData projectData);
+    ResponseEntity<?> updateProject(Authentication auth, ProjectRequest projectRequest);
 
-    ResponseEntity<?> updateProject(ProjectData projectData);
+    ResponseEntity<?> updateProject(ProjectRequest projectRequest);
 
     @PutMapping("/new")
-    ResponseEntity<?> createNewProject(Authentication auth, @RequestBody ProjectData projectData, @RequestBody TagDTO... tags);
+    ResponseEntity<?> createNewProject(Authentication auth, @RequestBody ProjectRequest projectRequest);
 
     @PutMapping("/demo/new")
-    ResponseEntity<?> createNewProject(@RequestBody ProjectData projectData, @RequestBody TagDTO... tags);
+    ResponseEntity<?> createNewProject(@RequestBody ProjectRequest projectRequest);
 }

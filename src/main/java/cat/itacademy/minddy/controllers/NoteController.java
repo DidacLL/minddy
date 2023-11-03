@@ -1,13 +1,11 @@
 package cat.itacademy.minddy.controllers;
 
-import cat.itacademy.minddy.data.dto.NoteDTO;
+import cat.itacademy.minddy.data.dto.views.NoteRequest;
 import cat.itacademy.minddy.data.dto.views.TaskData;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 @RequestMapping("v1/auth/note")
 
 public interface NoteController {
@@ -32,9 +30,30 @@ public interface NoteController {
 
     ResponseEntity<?> getProjectNotes(String id, int page, int size);
 
-    ResponseEntity<?> updateNote(Authentication auth, NoteDTO note);
+    @GetMapping("/pin")
+    ResponseEntity<?> getProjectPinnedNotes(Authentication auth, @RequestParam String id);
 
-    ResponseEntity<?> updateNote(TaskData taskData);
-    ResponseEntity<?> deleteNote(Authentication auth,TaskData taskData);
+    @GetMapping("/demo/pin")
+    ResponseEntity<?> getProjectPinnedNotes(@RequestParam String id);
+
+    @GetMapping("/tag")
+    ResponseEntity<?> getNoteTags(Authentication auth, @RequestParam String id);
+
+    @GetMapping("/demo/tag")
+    ResponseEntity<?> getNoteTags(@RequestParam String id);
+
+    @PostMapping("/update")
+    ResponseEntity<?> updateNote(Authentication auth, @RequestBody NoteRequest noteRequest);
+
+    @PostMapping("/demo/update")
+    ResponseEntity<?> updateNote(@RequestBody NoteRequest noteRequest);
+
+    @PostMapping("/new")
+    ResponseEntity<?> createNewNote(Authentication auth, @RequestBody NoteRequest noteRequest);
+
+    @PostMapping("/demo/new")
+    ResponseEntity<?> createNewNote(@RequestBody NoteRequest noteRequest);
+
+    ResponseEntity<?> deleteNote(Authentication auth, TaskData taskData);
     ResponseEntity<?> deleteNote(TaskData taskData);
 }

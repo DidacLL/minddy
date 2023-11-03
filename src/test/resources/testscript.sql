@@ -159,6 +159,8 @@ INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_vi
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_DELAYED_', '1234567891', '2023-08-05 09:18:50.235879', '2023-08-05 09:18:50.235879', false, false);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_FAV_', '1234567890', '2023-08-05 08:52:47.094445', '2023-08-05 08:52:47.094445', false, false);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_FAV_', '1234567891', '2023-08-05 09:18:50.256875', '2023-08-05 09:18:50.256875', false, false);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_PIN_', '1234567890', '2023-08-05 08:52:47.094445', '2023-08-05 08:52:47.094445', false, false);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_PIN_', '1234567891', '2023-08-05 09:18:50.256875', '2023-08-05 09:18:50.256875', false, false);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_ROOT_', '1234567890', '2023-08-05 08:52:47.099446', '2023-08-05 08:52:47.099446', false, false);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_ROOT_', '1234567891', '2023-08-05 09:18:50.261881', '2023-08-05 09:18:50.261881', false, false);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible) VALUES ('_TASK_', '1234567890', '2023-08-05 08:52:47.149444', '2023-08-05 08:52:47.149444', false, false);

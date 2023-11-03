@@ -1,12 +1,13 @@
 package cat.itacademy.minddy.services;
 
 
+import cat.itacademy.minddy.data.config.DefaultTags;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.NoteType;
 import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
-import cat.itacademy.minddy.data.dto.views.NoteFullView;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
+import cat.itacademy.minddy.data.dto.views.NoteRequest;
 import cat.itacademy.minddy.utils.MinddyException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -163,8 +164,8 @@ class NoteServiceTest {
         });
         assertDoesNotThrow(() ->
                 {
-                    NoteFullView fullNote = service.getFullNote(projectId, ref.note.getId());
-                    assertTrue("Unable to load full view Note", fullNote.getTags().size() == 5);
+                    NoteRequest fullNote = service.getFullNote(projectId, ref.note.getId());
+                    assertTrue("Unable to load full view Note", fullNote.getTags().length == 5);
                 }
         );
     }
@@ -198,4 +199,16 @@ class NoteServiceTest {
         assertDoesNotThrow(()-> assertFalse(service.searchNotesByContent(projectId,0,Integer.MAX_VALUE,"This is a task note").isEmpty()));
     }
 
+    @Test
+    void pinned_test() {
+        assertDoesNotThrow(() ->service.createNewNote(projectId,
+                new NoteDTO()
+                        .setName("TEST")
+                        .setBody("This is a test note")
+                        .setVisible(true)
+                        .setType(NoteType.TEXT),
+                DefaultTags.PINNED.toDTO())
+        );
+        assertDoesNotThrow(()-> System.out.println(service.getProjectPinnedNotes(projectId)));
+    }
 }

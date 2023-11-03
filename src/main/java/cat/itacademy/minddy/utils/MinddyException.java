@@ -14,7 +14,7 @@ public class MinddyException extends Exception{
 
     public static Map<String, String> getErrorResponse(MinddyException e) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", e.getMessage());
+        errorResponse.put("message", e.getErrorMessage());
         errorResponse.put("code", String.valueOf(e.getErrorCode()));
         return errorResponse;
     }

@@ -1,7 +1,7 @@
 package cat.itacademy.minddy.data.dto.views;
 
-import cat.itacademy.minddy.data.config.ProjectState;
 import cat.itacademy.minddy.data.dao.Project;
+import cat.itacademy.minddy.data.dao.Tag;
 import cat.itacademy.minddy.data.dto.ProjectDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,20 +19,26 @@ public class ProjectData {
     private String projectID;
     private String projectName;
     private String description;
-    private ProjectState state;
-    private LocalDate deadLine;
+    private String state;
+    private LocalDate deadline;
     private String uiConfig;
+    private Tag[] tags;
 
     public static ProjectData fromEntity(Project entity){
+
+
         return new ProjectData(
                 entity.getId().getHolderId(),
                 entity.getId().getOwnId(),
                 entity.getName(),
                 entity.getDescription(),
-                entity.getState(),
+                entity.getState().name(),
                 entity.getDeadLine(),
-                entity.getUiConfig()
+                entity.getUiConfig(),
+                entity.getTags().toArray(Tag[]::new)
         );
+
+
     }
     public static ProjectData fromDTO(ProjectDTO dto){
         return new ProjectData(
@@ -39,9 +46,9 @@ public class ProjectData {
                 dto.getId().getOwnId(),
                 dto.getName(),
                 dto.getDescription(),
-                dto.getState(),
+                dto.getState().name(),
                 dto.getDeadLine(),
-                dto.getUiConfig()
-        );
+                dto.getUiConfig(),
+                new ArrayList<Tag>().toArray(Tag[]::new));
     }
 }

@@ -3,6 +3,7 @@ package cat.itacademy.minddy.repositories;
 import cat.itacademy.minddy.data.config.HierarchicalId;
 import cat.itacademy.minddy.data.config.NoteType;
 import cat.itacademy.minddy.data.dao.Note;
+import cat.itacademy.minddy.data.dao.Project;
 import cat.itacademy.minddy.data.dto.NoteDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.dto.views.NoteMinimal;
@@ -19,6 +20,13 @@ import java.util.UUID;
 
 @Repository
 public interface NoteRepository extends JpaRepository<Note, UUID> {
+
+    @Query(value = """
+        SELECT new cat.itacademy.minddy.data.dto.views.NoteMinimal(n.id)
+        FROM Tag t JOIN Note n
+         WHERE t.id.name IN :tags AND n.holder.id = :id """
+    )
+    List<NoteMinimal> searchByHolderAndTags(HierarchicalId id, String... tags);
     @Query(nativeQuery = true,value = """
     SELECT  * FROM notes n WHERE n.user= :userId
     AND n.parent_id =:parentId
@@ -108,4 +116,9 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     )
 """)
     Page<NoteMinimal> searchByBodyAndType(String userId, String parentId, String holderId,Pageable pageable, String text, NoteType... types);
+
+    @Query(value = """
+    SELECT n.holder FROM Note n WHERE n.id =:noteId AND n.holder.id.userId=:userId
+""")
+    Optional<Project> getNoteHolder(String userId,UUID noteId);
 }

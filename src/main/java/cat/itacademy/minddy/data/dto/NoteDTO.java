@@ -15,8 +15,8 @@ import java.util.UUID;
 @Getter @Setter
 public class NoteDTO {
     private UUID id;
-    private String name;
-    private String body;
+    private String name="";
+    private String body="";
     private NoteType type;
     private boolean isVisible;
 

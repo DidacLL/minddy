@@ -11,6 +11,8 @@ INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_vi
 VALUES ('_ROOT_', 'DEMO_00FF', CURDATE(), CURDATE(), false, false);
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible)
 VALUES ('_TASK_', 'DEMO_00FF', CURDATE(), CURDATE(), false, false);
+INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible)
+VALUES ('_MAIN_', 'DEMO_00FF', CURDATE(), CURDATE(), false, false);
 
 INSERT INTO tags (name, user_id, creation_date, update_date, is_heritable, is_visible)
 VALUES ('VIP', 'DEMO_00FF', CURDATE(), CURDATE(), false, true);
@@ -27,7 +29,7 @@ VALUES ('JOB_SEARCH', 'DEMO_00FF', CURDATE(), CURDATE(), false, true);
 
 INSERT INTO projects (holder_id, own_id, user_id, creation_date, update_date, dead_line, description, name, state,
                       ui_config)
-VALUES ('', '00', 'DEMO_00FF', CURDATE(), CURDATE(), null, '', 'Minddy Demo ', 2, '');
+VALUES ('', '00', 'DEMO_00FF', CURDATE(), CURDATE(), null, '', '_minddy Today', 2, '');
 INSERT INTO projects (holder_id, own_id, user_id, creation_date, update_date, dead_line, description, name, state,
                       ui_config)
 VALUES ('00', 'FF', 'DEMO_00FF', CURDATE(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL 4 YEAR),

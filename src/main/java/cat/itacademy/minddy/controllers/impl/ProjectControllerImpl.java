@@ -6,6 +6,8 @@ import cat.itacademy.minddy.data.config.TaskState;
 import cat.itacademy.minddy.data.dto.ProjectDTO;
 import cat.itacademy.minddy.data.dto.TagDTO;
 import cat.itacademy.minddy.data.dto.views.ProjectData;
+import cat.itacademy.minddy.data.dto.views.ProjectRequest;
+import cat.itacademy.minddy.data.dto.views.TagData;
 import cat.itacademy.minddy.services.ProjectService;
 import cat.itacademy.minddy.services.TagService;
 import cat.itacademy.minddy.services.TaskService;
@@ -14,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 import static cat.itacademy.minddy.utils.MinddyException.getErrorResponse;
 
@@ -75,11 +79,10 @@ public class ProjectControllerImpl implements ProjectController {
 
     @Override
     @GetMapping("/tag")
-
     public ResponseEntity<?> getProjectTags(Authentication auth, @RequestParam String id) {
         try {
 
-            return ResponseEntity.ok(tagService.getProjectTags(new HierarchicalId(auth.getName(), id), true));
+            return ResponseEntity.ok(tagService.getProjectTags(new HierarchicalId(auth.getName(), id), true).stream().map(TagData::fromDTO));
         } catch (Exception e) {
             System.out.println("ERRRRR! " + e);
             return ResponseEntity.badRequest().body(e);
@@ -90,14 +93,14 @@ public class ProjectControllerImpl implements ProjectController {
     @GetMapping("/demo/tag")
 
     public ResponseEntity<?> getProjectTags(@RequestParam String id) {
-            try {
+        try {
 
-        return ResponseEntity.ok(tagService.getProjectTags(new HierarchicalId(DEMO_ID, id), true));
+            return ResponseEntity.ok(tagService.getProjectTags(new HierarchicalId(DEMO_ID, id), true).stream().map(TagData::fromDTO));
 
-            } catch (Exception e) {
-                System.out.println("ERRRRR! " + e);
-                return ResponseEntity.badRequest().body(e);
-            }
+        } catch (Exception e) {
+            System.out.println("ERRRRR! " + e);
+            return ResponseEntity.badRequest().body(e);
+        }
     }
 
     @Override
@@ -129,10 +132,15 @@ public class ProjectControllerImpl implements ProjectController {
     }
 
     @Override
-    @PutMapping("/update")
-    public ResponseEntity<?> updateProject(Authentication auth, @RequestBody ProjectData projectData) {
+    @PostMapping("/update")
+    public ResponseEntity<?> updateProject(Authentication auth, @RequestBody ProjectRequest projectRequest) {
         try {
-            return ResponseEntity.ok(projectService.updateProject(ProjectDTO.fromData(auth.getName(), projectData)));
+            ArrayList<TagDTO> tags = new ArrayList<>();
+            for (String name : projectRequest.getTags()) {
+                tags.add(tagService.getTag(auth.getName(), name));
+            }
+            return ResponseEntity.ok(ProjectData.fromDTO(projectService.updateProject(ProjectDTO.fromData(auth.getName(), projectRequest.getProjectData()),
+                    tags.toArray(new TagDTO[0])  )));
         } catch (MinddyException e) {
             System.out.println("ERRRRR! " + e.getErrorMessage());
             return ResponseEntity.badRequest().body(getErrorResponse(e));
@@ -140,10 +148,14 @@ public class ProjectControllerImpl implements ProjectController {
     }
 
     @Override
-    @PutMapping("/demo/update")
-    public ResponseEntity<?> updateProject(@RequestBody ProjectData projectData) {
+    @PostMapping("/demo/update")
+    public ResponseEntity<?> updateProject(@RequestBody ProjectRequest projectRequest) {
         try {
-            return ResponseEntity.ok(projectService.updateProject(ProjectDTO.fromData(DEMO_ID, projectData)));
+            ArrayList<TagDTO> tags = new ArrayList<>();
+            for (String name : projectRequest.getTags()) {
+                tags.add(tagService.getTag(DEMO_ID, name));
+            }
+            return ResponseEntity.ok(ProjectData.fromDTO(projectService.updateProject(ProjectDTO.fromData(DEMO_ID, projectRequest.getProjectData()), tags.toArray(new TagDTO[0]))));
         } catch (MinddyException e) {
             System.out.println("ERRRRR! " + e.getErrorMessage());
             return ResponseEntity.badRequest().body(getErrorResponse(e));
@@ -152,10 +164,20 @@ public class ProjectControllerImpl implements ProjectController {
     }
 
     @Override
-    @PutMapping("/new")
-    public ResponseEntity<?> createNewProject(Authentication auth, @RequestBody ProjectData projectData, @RequestBody TagDTO... tags) {
+    @PostMapping("/new")
+    public ResponseEntity<?> createNewProject(Authentication auth, @RequestBody ProjectRequest projectRequest) {
         try {
-            return ResponseEntity.ok(projectService.createProject(ProjectDTO.fromData(auth.getName(), projectData), tags));
+            ArrayList<TagDTO> tags = new ArrayList<>();
+            for (String name : projectRequest.getTags()) {
+                tags.add(tagService.getTag(auth.getName(), name));
+            }
+
+
+            return ResponseEntity.ok
+                    (projectService.createProject(ProjectDTO.fromData(auth.getName(),
+                                    projectRequest.getProjectData()),
+                            tags.toArray(new TagDTO[0]))
+                    );
         } catch (MinddyException e) {
             System.out.println("ERRRRR! " + e.getErrorMessage());
             return ResponseEntity.badRequest().body(getErrorResponse(e));
@@ -164,10 +186,17 @@ public class ProjectControllerImpl implements ProjectController {
     }
 
     @Override
-    @PutMapping("/demo/new")
-    public ResponseEntity<?> createNewProject(@RequestBody ProjectData projectData, @RequestBody TagDTO... tags) {
+    @PostMapping("/demo/new")
+    public ResponseEntity<?> createNewProject(@RequestBody ProjectRequest projectRequest) {
         try {
-            return ResponseEntity.ok(projectService.createProject(ProjectDTO.fromData(DEMO_ID, projectData), tags));
+            ArrayList<TagDTO> tags = new ArrayList<>();
+            for (String name : projectRequest.getTags()) {
+                tags.add(tagService.getTag(DEMO_ID, name));
+            }
+
+            return ResponseEntity.ok(projectService.createProject(ProjectDTO.fromData(DEMO_ID,
+                            projectRequest.getProjectData()),
+                    tags.toArray(new TagDTO[0])));
         } catch (MinddyException e) {
             System.out.println("ERRRRR! " + e.getErrorMessage());
             return ResponseEntity.badRequest().body(getErrorResponse(e));

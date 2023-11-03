@@ -10,6 +10,7 @@ import cat.itacademy.minddy.data.html.ProjectNode;
 import cat.itacademy.minddy.data.html.ProjectStructure;
 import cat.itacademy.minddy.repositories.ProjectRepository;
 import cat.itacademy.minddy.repositories.TagRepository;
+import cat.itacademy.minddy.services.NoteService;
 import cat.itacademy.minddy.services.ProjectService;
 import cat.itacademy.minddy.utils.MinddyException;
 import jakarta.transaction.Transactional;
@@ -27,13 +28,15 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectRepository repo;
     @Autowired
     TagRepository tagRepository;
+    @Autowired
+    NoteService noteService;
 
     @Override
     public ProjectDTO createRootProject(String userId, String uiConfig, String userName, TagDTO rootTag) {
 
         var root = new ProjectDTO()
                 .setId(new HierarchicalId().setOwnId("00").setUserId(userId).setHolderId(""))
-                .setName(userName)
+                .setName("_minddy Today")
                 .setDescription("")
 //                   .setTrackers(null)// TODO: 02/07/2023  Add trackers to count subprojects and tasks
                 .setUiConfig(uiConfig)
@@ -41,7 +44,11 @@ public class ProjectServiceImpl implements ProjectService {
                 .setState(ProjectState.SILENT);
 
 
-        return ProjectDTO.fromEntity(repo.save(Project.fromDTO(root).addTag(Tag.fromDTO(rootTag, userId))));
+        Project save = repo.save(Project.fromDTO(root).addTag(Tag.fromDTO(rootTag, userId)));
+
+
+
+        return ProjectDTO.fromEntity(save);
     }
 
     @Override
@@ -65,7 +72,13 @@ public class ProjectServiceImpl implements ProjectService {
         dto.setId(dto.getId().setOwnId(newId));
 
         //Save it
-        return ProjectDTO.fromEntity(repo.save(Project.fromDTO(dto, tags)));
+        Project save = repo.save(Project.fromDTO(dto, tags));
+//        try {
+//            noteService.createNewNote(save.getId(), new NoteDTO().setType(NoteType.TEXT).setVisible(true), DefaultTags.PINNED.toDTO());
+//        }catch (MinddyException e){
+//            System.out.println(e.getErrorMessage());
+//        }
+        return ProjectDTO.fromEntity(save);
     }
 
     @Override

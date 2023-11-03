@@ -39,4 +39,6 @@ public interface TaskService {
 
 
     List<TaskMinimal> getMissedTasks(String userId, LocalDate today);
+
+    String getTaskHolder(String userId, String taskId) throws MinddyException;
 }
